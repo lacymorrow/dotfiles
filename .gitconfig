@@ -1,3 +1,8 @@
+[push]
+  default = simple
+[user]
+  name = Lacy Morrow
+  email = me@lacymorrow.com
 [color]
   ui = auto
 [color "branch"]
