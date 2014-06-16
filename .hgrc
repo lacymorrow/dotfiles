@@ -1,0 +1,10 @@
+[ui]
+username = Lacy Morrow <me@lacymorrow.com>
+editor = vim
+verbose = True
+
+[extensions]
+prompt = /Applications/hg-prompt/prompt.py
+
+[alias]
+fuck = revert --no-backup --all
