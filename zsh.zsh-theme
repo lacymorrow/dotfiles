@@ -37,12 +37,13 @@ patches: <patches|join( → )|pre_applied(%{$fg[yellow]%})|post_applied(%{$reset
 
 local current_dir='${PWD/#$HOME/~}'
 local git_info='$(git_prompt_info)'
+local hg_info='$(hg_prompt_info)'
 local prompt_char='$(prompt_char)'
 
-PROMPT="╭─%{$FG[040]%}%n%{$reset_color%} %{$FG[239]%}at%{$reset_color%} %{$FG[033]%}$(box_name)%{$reset_color%} %{$FG[239]%}in%{$reset_color%} %{$terminfo[bold]$FG[226]%}${current_dir}%{$reset_color%}$(hg_prompt_info)${git_info}
+PROMPT="╭─%{$FG[040]%}%n%{$reset_color%} %{$FG[239]%}at%{$reset_color%} %{$FG[033]%}$(box_name)%{$reset_color%} %{$FG[239]%}in%{$reset_color%} %{$terminfo[bold]$FG[226]%}${current_dir}%{$reset_color%}${hg_info}${git_info}
 ╰─${prompt_char}%{$reset_color%} "
 
-RPROMPT='$(battery_pct_prompt)$(battery_level_gauge)'
+RPROMPT='$(battery_level_gauge)'
 
 ZSH_THEME_GIT_PROMPT_PREFIX=" %{$FG[239]%}on%{$reset_color%} %{$fg[magenta]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
