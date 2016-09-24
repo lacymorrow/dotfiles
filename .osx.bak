@@ -55,7 +55,7 @@ defaults write com.apple.helpviewer DevMode -bool true
 sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
 
 # Restart automatically if the computer freezes
-sudo systemsetup -setrestartfreeze on
+systemsetup -setrestartfreeze on
 
 # Disable smart quotes as they’re annoying when typing code
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
@@ -516,22 +516,8 @@ defaults write com.twitter.twitter-mac ShowFullNames -bool true
 # Hide the app in the background if it’s not the front-most window
 defaults write com.twitter.twitter-mac HideInBackground -bool true
 
-# remove dotfiles git from this repo
-# rm -r ./.git
-
-# copy dotfiles to tmp -> home
-echo "Copying dotfiles to tmp -> home folder"
-mkdir -p ~/dot-tmp
-cp -rf ${PWD##*/}/.* ~/dot-tmp
-rm -rf ~/dot-tmp/.git
-echo "Copy dotfiles to home dir"
-cp -rf ~/dot-tmp ~
-echo "Cleaning the tmp files"
-rm -rf ~/dot-tmp
-
-
-# Add the subl command for Sublime (Applications/Sublime Text.app) FORCED***
-sudo ln -fs "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" ~/bin/s
+# Add the subl command for Sublime (Applications/Sublime Text.app)
+sudo ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" ~/bin/s
 
 # Make Sublime the default editor
 export EDITOR='s -w'
@@ -546,6 +532,7 @@ for app in "Activity Monitor" "Address Book" "Calendar" "Contacts" "cfprefsd" \
 	"Terminal" "Transmission" "Twitter" "iCal"; do
 	killall "${app}" > /dev/null 2>&1
 done
-sleep 3
-
+echo "Cleaning the tmp files"
+rm .
+sleep 100
 echo "Done. Note that some of these changes require a logout/restart to take effect."

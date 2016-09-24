@@ -48,11 +48,11 @@ COMPLETION_WAITING_DOTS="true"
 plugins=(git git-prompt atom autojump battery)
 
 source $ZSH/oh-my-zsh.sh
-source $HOME/.aliases
+source .aliases
 
 # User configuration
 
-export PATH="${HOME}/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin"
+export PATH="/Users/lmorrow/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
