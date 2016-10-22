@@ -21,3 +21,8 @@ The (dot)files that make the magic happen.
 `git fuck` is my most used alias (aliased to `git reset HEAD~ --hard`)
 
 This package works on any *nix-based system, partially on windows
+
+
+### Extras
+
+Don't forget screensavers! I like the [Google Trends](https://www.google.com/trends/hottrends/visualize) personally.
