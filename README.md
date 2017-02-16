@@ -26,3 +26,6 @@ This package works on any *nix-based system, partially on windows
 ### Extras
 
 Don't forget screensavers! I like the [Google Trends](https://www.google.com/trends/hottrends/visualize) personally.
+
+- install brew
+- `brew install nodejs yarn grunt-cli gulp meteor`
