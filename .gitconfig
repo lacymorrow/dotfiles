@@ -26,6 +26,8 @@
   whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
 [alias]
   st = status
+  ch = checkout
+  ck = checkout
   chk = checkout
   ci = commit
   cp = cherry-pick
@@ -34,6 +36,7 @@
   co = checkout
   df = diff
   dc = diff --cached
+  mg = merge --no-ff
   lg = log -p
   lol = log --graph --decorate --pretty=oneline --abbrev-commit
   lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
@@ -42,7 +45,7 @@
   type = cat-file -t
   dump = cat-file -p
   up = pull --rebase
-  pul = pull
+  pul = pull --no-ff
   dif = diff
   fuck = reset HEAD --hard
 
