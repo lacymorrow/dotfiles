@@ -1,5 +1,8 @@
 # Add `~/bin` to the `$PATH`
 export PATH="$HOME/bin:$PATH"
+# Fix Ruby path
+export GEM_HOME=~/.gem
+
 
 # Make tab-completion case-insensitive
 bind "set completion-ignore-case on"
