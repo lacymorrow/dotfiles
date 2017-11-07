@@ -29,3 +29,4 @@ Don't forget screensavers! I like the [Google Trends](https://www.google.com/tre
 
 - install brew
 - `brew install nodejs yarn grunt-cli gulp meteor`
+- _From [Sindré](https://github.com/sindresorhus/quick-look-plugins):_ `brew cask install qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package quicklookase qlvideo`
