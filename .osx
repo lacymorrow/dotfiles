@@ -19,7 +19,15 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 # Install all brew apps (including CLI 'trash' command)
-brew install mercurial node trash zsh zsh-completions
+brew install     
+
+for app in "mercurial" \
+	"node" \
+	"trash" \
+	"zsh" \
+	"zsh-completions"; do
+	brew install "${app}"
+done
 
 for app in "codekit" \
 	"dash" \
@@ -38,8 +46,20 @@ for app in "codekit" \
 done
 
 # Installs handy quick-look plugins https://github.com/sindresorhus/quick-look-plugins
-brew cask install qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package quicklookase qlvideo
-
+for app in "qlcolorcode" \
+	"qlstephen" \
+	"qlmarkdown" \
+	"quicklook-json" \
+	"qlprettypatch" \
+	"quicklook-csv" \
+	"betterzipql" \
+	"qlimagesize" \
+	"webpquicklook" \
+	"suspicious-package" \
+	"quicklookase" \
+	"qlvideo"; do
+	brew cask install "${app}"
+done
 ###############################################################################
 # SSD-specific tweaks                                                         #
 ###############################################################################
