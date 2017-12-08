@@ -62,6 +62,12 @@ for app in "qlcolorcode" \
 	"qlvideo"; do
 	brew cask install "${app}"
 done
+
+# Install NPM global packages
+for app in "gulp" \
+	"grunt-cli"; do
+	npm install -g "${app}"
+done
 ###############################################################################
 # SSD-specific tweaks                                                         #
 ###############################################################################
