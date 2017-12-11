@@ -65,7 +65,8 @@ done
 
 # Install NPM global packages
 for app in "gulp" \
-	"grunt-cli"; do
+	"grunt-cli" \
+	"n"; do
 	npm install -g "${app}"
 done
 ###############################################################################
@@ -747,8 +748,9 @@ sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/i
 # Kill affected applications                                                  #
 ###############################################################################
 echo "Done. Note that some of these changes require a logout/restart to take effect."
+echo "You should run `npm adduser` to generate an authtoken for npmjs.org."
 echo "Killing affected apps in 3... 2... 1..."
-sleep 3
+sleep 5
 
 for app in "Activity Monitor" "Address Book" "Calendar" "Contacts" "cfprefsd" \
 	"Dock" "Finder" "Google Chrome Canary" "Google Chrome" "Mail" "Messages" \
