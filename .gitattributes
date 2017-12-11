@@ -1,14 +1,13 @@
 * text=auto
 
-# From https://github.com/Danimoth/gitattributes/blob/master/Web.gitattributes
-
 # Handle line endings automatically for files detected as text
 # and leave all files detected as binary untouched.
-* text=auto
 
 #
 # The above will handle all files NOT found below
 #
+
+# From https://github.com/Danimoth/gitattributes/blob/master/Web.gitattributes
 
 #
 ## These files are text and should be normalized (Convert crlf => lf)
