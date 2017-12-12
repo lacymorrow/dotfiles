@@ -27,6 +27,5 @@ This package works on any *nix-based system, partially on windows
 
 Don't forget screensavers! I like the [Google Trends](https://www.google.com/trends/hottrends/visualize) personally.
 
-- install brew
-- `brew install nodejs yarn grunt-cli gulp meteor`
+-  Homebrew, Node, Meteor, etc...
 - _From [Sindré](https://github.com/sindresorhus/quick-look-plugins):_ `brew cask install qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package quicklookase qlvideo`
