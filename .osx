@@ -23,8 +23,6 @@ curl https://install.meteor.com/ | sh
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 # Install all brew apps (including CLI 'trash' command)
-brew install     
-
 for app in "imagemagick" \
 	"mercurial" \
 	"node" \
@@ -38,6 +36,7 @@ for app in "codekit" \
 	"dash" \
 	"docker" \
 	"gimp" \
+	"hyper" \
 	"iterm2" \
 	"now" \
 	"sublime-text" \
