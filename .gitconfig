@@ -49,8 +49,8 @@
   up = pull --rebase
   pul = pull
   pulll = pull
-  pu = push --set-upstream origin `git symbolic-ref --short HEAD`
-  pushup = push --set-upstream origin `git symbolic-ref --short HEAD`
+  pu = !git push --set-upstream origin `git symbolic-ref --short HEAD`
+  pushup = !git push --set-upstream origin `git symbolic-ref --short HEAD`
   fuck = reset HEAD --hard
 
   # Show files ignored by git:
