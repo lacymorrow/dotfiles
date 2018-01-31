@@ -50,7 +50,7 @@
   pul = pull
   pulll = pull
   pu = push --set-upstream origin `git symbolic-ref --short HEAD`
-  pushup = pu
+  pushup = push --set-upstream origin `git symbolic-ref --short HEAD`
   fuck = reset HEAD --hard
 
   # Show files ignored by git:
