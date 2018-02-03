@@ -1,7 +1,7 @@
-dotfiles
+.dotfiles
 ========
 
-The (dot)files that make the magic happen. 
+> The (dot)files that make the magic happen. 
 
 Highly-opinionated, UNIX-friendly, macOS-directed
 
