@@ -29,7 +29,8 @@ for app in "fasd" \
 	"node" \
 	"trash" \
 	"zsh" \
-	"zsh-completions"; do
+	"zsh-completions" \
+	"zsh-syntax-highlighting"; do
 	brew install "${app}"
 done
 
