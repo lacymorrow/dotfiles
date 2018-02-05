@@ -736,8 +736,8 @@ cp -rf ~/dot-tmp ~
 echo "Cleaning the tmp files"
 rm -rf ~/dot-tmp
 
-cd /Applications
-hg clone https://bitbucket.org/sjl/hg-prompt
+# cd /Applications
+# hg clone https://bitbucket.org/sjl/hg-prompt
 
 
 # Add the subl command for Sublime (Applications/Sublime Text.app) FORCED***
@@ -752,10 +752,12 @@ if [ "$CI" != "true" ] ; then sh -c "$(curl -fsSL https://raw.github.com/robbyru
 ###############################################################################
 # Kill affected applications                                                  #
 ###############################################################################
-echo "Done. Note that some of these changes require a logout/restart to take effect."
-echo "You should run `npm adduser` to generate an authtoken for npmjs.org."
-echo "Killing affected apps in 3... 2... 1..."
-sleep 5
+if [ "$CI" != "true" ] ; then
+  echo "Done. Note that some of these changes require a logout/restart to take effect."
+  echo "You should run `npm adduser` to generate an authtoken for npmjs.org."
+  echo "Killing affected apps in 3... 2... 1..."
+  sleep 5
+fi
 
 for app in "Activity Monitor" "Address Book" "Calendar" "Contacts" "cfprefsd" \
 	"Dock" "Finder" "Google Chrome Canary" "Google Chrome" "Mail" "Messages" \
