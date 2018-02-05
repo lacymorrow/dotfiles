@@ -2,7 +2,7 @@
 ========
 > The (dot)files that make the magic happen. 
 [![Build Status](https://travis-ci.org/lacymorrow/dotfiles.svg?branch=master)](https://travis-ci.org/lacymorrow/dotfiles)
-
+ 
 Highly-opinionated, UNIX-friendly, macOS-directed
 
 
