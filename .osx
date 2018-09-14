@@ -71,7 +71,8 @@ done
 # Install NPM global packages
 for app in "gulp" \
 	"grunt-cli" \
-	"n"; do
+	"n" \
+	"tldr"; do
 	npm install -g "${app}"
 done
 ###############################################################################
