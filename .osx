@@ -20,11 +20,11 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 curl https://install.meteor.com/ | sh
 
 # Install Homebrew
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+# /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 # Install all brew apps (including CLI 'trash' command)
 for app in "fasd" \
-        "imagemagick" \
+    "imagemagick" \
 	"mercurial" \
 	"node" \
 	"trash" \
@@ -34,7 +34,8 @@ for app in "fasd" \
 	brew install "${app}"
 done
 
-for app in "codekit" \
+for app in "caffeine" \
+    "codekit" \
 	"dash" \
 	"docker" \
 	"gimp" \
@@ -175,8 +176,8 @@ defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
-# Increase sound quality for Bluetooth headphones/headsets
-defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
+# Increase sound quality for Bluetooth headphones/headsets - Deprecated
+# defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
 
 # Enable full keyboard access for all controls
 # (e.g. enable Tab in modal dialogs)
@@ -292,7 +293,7 @@ defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
 
 # Show item info near icons on the desktop and in other icon views
 /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
-/usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
+# /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist - Deprecated
 /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
 
 # Show item info to the right of the icons on the desktop
@@ -300,7 +301,7 @@ defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
 
 # Enable snap-to-grid for icons on the desktop and in other icon views
 /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
-/usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
+# /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist - Deprecated
 /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
 
 # Use list view in all Finder windows by default
@@ -317,7 +318,7 @@ defaults write com.apple.finder EmptyTrashSecurely -bool true
 defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
 
 # Enable the MacBook Air SuperDrive on any Mac
-sudo nvram boot-args="mbasd=1"
+# sudo nvram boot-args="mbasd=1" - Deprecated
 
 # Show the ~/Library folder
 chflags nohidden ~/Library
@@ -729,13 +730,13 @@ defaults write com.twitter.twitter-mac HideInBackground -bool true
 
 # copy dotfiles to tmp -> home
 echo "Copying dotfiles to tmp -> home folder"
-mkdir -p ~/dot-tmp
-cp -rf ${PWD##*/}/.* ~/dot-tmp
-rm -rf ~/dot-tmp/.git
+sudo mkdir -p ~/dot-tmp
+sudo cp -rf ${PWD##*/}/.* ~/dot-tmp
+sudo rm -rf ~/dot-tmp/.git
 echo "Copy dotfiles to home dir"
-cp -rf ~/dot-tmp ~
+sudo cp -rf ~/dot-tmp ~
 echo "Cleaning the tmp files"
-rm -rf ~/dot-tmp
+sudo rm -rf ~/dot-tmp
 
 # cd /Applications
 # hg clone https://bitbucket.org/sjl/hg-prompt
@@ -748,7 +749,7 @@ sudo ln -fs "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" ~/b
 export EDITOR='s -w'
 
 # Install oh-my-zsh
-if [ "$CI" != "true" ] ; then sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" ; fi
+if [ "$CI" != "true" ] ; then sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" ; fi
 
 ###############################################################################
 # Kill affected applications                                                  #
