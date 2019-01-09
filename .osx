@@ -27,6 +27,7 @@ for app in "fasd" \
     "imagemagick" \
 	"mercurial" \
 	"node" \
+	"tig" \
 	"trash" \
 	"zsh" \
 	"zsh-completions" \
