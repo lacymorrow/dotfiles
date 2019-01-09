@@ -20,29 +20,29 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 curl https://install.meteor.com/ | sh
 
 # Install Homebrew
-# /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-# Install all brew apps (including CLI 'trash' command)
-for app in "fasd" \
-    "imagemagick" \
-	"mercurial" \
-	"node" \
-	"tig" \
-	"trash" \
-	"zsh" \
-	"zsh-completions" \
-	"zsh-syntax-highlighting"; do
-	brew install "${app}"
-done
+brew cask
+brew tap buo/cask-upgrade
 
-for app in "caffeine" \
-    "codekit" \
+brew install mas
+
+for app in "brackets" \
+        "caffeine" \
+        "codekit" \
+	"cyberduck" \
 	"dash" \
 	"docker" \
+	"firefox" \
 	"gimp" \
+	"google-chrome" \
 	"hyper" \
 	"iterm2" \
+	"ngrok" \
 	"now" \
+	"postman" \
+	"slack" \
+	"spotify" \
 	"sublime-text" \
 	"transmission" \
 	"unetbootin" \
@@ -53,6 +53,26 @@ for app in "caffeine" \
 	"vmware-fusion"; do
 	brew cask install "${app}"
 done
+
+# Install all brew apps (including CLI 'trash' command)
+for app in "atom" \
+        "awscli" \
+        "fasd" \
+        "imagemagick" \
+	"mercurial" \
+	"node" \
+	"python" \
+	"python3" \
+	"tig" \
+	"trash" \
+	"zsh" \
+	"zsh-completions" \
+	"zsh-syntax-highlighting"; do
+	brew install "${app}"
+done
+
+# Amphetamine
+mas install 937984704
 
 # Installs handy quick-look plugins https://github.com/sindresorhus/quick-look-plugins
 for app in "qlcolorcode" \
