@@ -27,13 +27,16 @@ brew tap buo/cask-upgrade
 
 brew install mas
 
-for app in "brackets" \
+for app in "1password" \
+        "amphetamine" \
+        "brackets" \
         "caffeine" \
         "codekit" \
 	"cyberduck" \
 	"dash" \
 	"docker" \
 	"firefox" \
+	"flycut" \
 	"gimp" \
 	"google-chrome" \
 	"hyper" \
