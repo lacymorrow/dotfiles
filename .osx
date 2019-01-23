@@ -29,8 +29,8 @@ brew install mas
 
 for app in "1password" \
         "amphetamine" \
+	"atom" \
         "brackets" \
-        "caffeine" \
         "codekit" \
 	"cyberduck" \
 	"dash" \
@@ -58,8 +58,7 @@ for app in "1password" \
 done
 
 # Install all brew apps (including CLI 'trash' command)
-for app in "atom" \
-        "awscli" \
+for app in "awscli" \
         "fasd" \
         "imagemagick" \
 	"mercurial" \
@@ -785,11 +784,28 @@ if [ "$CI" != "true" ] ; then
   sleep 5
 fi
 
-for app in "Activity Monitor" "Address Book" "Calendar" "Contacts" "cfprefsd" \
-	"Dock" "Finder" "Google Chrome Canary" "Google Chrome" "Mail" "Messages" \
-	"Photos" "Safari" "SystemUIServer" \
-	"Terminal" "Transmission" "Twitter" "iCal"; do
-	killall "${app}" > /dev/null 2>&1
+for app in "Activity Monitor" \
+	"Address Book" \
+	"Calendar" \
+	"cfprefsd" \
+	"Contacts" \
+	"Dock" \
+	"Finder" \
+	"Google Chrome Canary" \
+	"Google Chrome" \
+	"Mail" \
+	"Messages" \
+	"Opera" \
+	"Photos" \
+	"Safari" \
+	"SizeUp" \
+	"Spectacle" \
+	"SystemUIServer" \
+	"Terminal" \
+	"Transmission" \
+	"Twitter" \
+	"iCal"; do
+	killall "${app}" &> /dev/null
 done
 
 exit 0
