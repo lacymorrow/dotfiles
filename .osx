@@ -57,7 +57,7 @@ for app in "1password" \
 	brew cask install "${app}"
 done
 
-# Install all brew apps (including CLI 'trash' command)
+# Install all brew apps (including CLI 'trash' and 'wget' commands)
 for app in "awscli" \
         "fasd" \
         "imagemagick" \
@@ -67,6 +67,8 @@ for app in "awscli" \
 	"python3" \
 	"tig" \
 	"trash" \
+	"wget" \
+	"z" \
 	"zsh" \
 	"zsh-completions" \
 	"zsh-syntax-highlighting"; do
