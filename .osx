@@ -68,7 +68,6 @@ for app in "awscli" \
 	"tig" \
 	"trash" \
 	"wget" \
-	"z" \
 	"zsh" \
 	"zsh-completions" \
 	"zsh-syntax-highlighting"; do
