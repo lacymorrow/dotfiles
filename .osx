@@ -59,7 +59,6 @@ done
 
 # Install all brew apps (including CLI 'trash' and 'wget' commands)
 for app in "awscli" \
-        "fasd" \
         "imagemagick" \
 	"mercurial" \
 	"node" \
