@@ -20,7 +20,7 @@ Highly-opinionated, UNIX-friendly, macOS-directed
 
 ### Usage
 
-`git fuck` is my most used alias (aliased to `git reset HEAD~ --hard`)
+`git fuck` is my most used alias (aliased to `git reset HEAD --hard`)
 
 This package works on any *nix-based system, partially on windows
 
