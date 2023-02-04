@@ -1,0 +1,37 @@
+{
+  "manifest": {
+    "name": "hyperlinks",
+    "version": "0.5.0",
+    "description": "Extension for Hyper that automatically links URLs",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/zeit/hyperlinks"
+    },
+    "keywords": [
+      "hyper",
+      "hyper.app"
+    ],
+    "dependencies": {
+      "email-regex": "1.0.0",
+      "escape-html": "1.0.3",
+      "ip-regex": "2.0.0",
+      "url-regex": "4.0.0"
+    },
+    "license": "MIT",
+    "_registry": "npm",
+    "_loc": "/Users/tmorrow/.hyper_plugins/cache/v1/npm-hyperlinks-0.5.0-e2e824d6f503653d26bf4e2735a3db24743f4d4e/package.json",
+    "readmeFilename": "README.md",
+    "readme": "# hyperlinks\n\nExtension for [Hyper](https://hyper.is) that automatically links URLs.\n\n![Demo](https://cloud.githubusercontent.com/assets/775227/16933009/4fd309a0-4d85-11e6-99b5-720185f4b7d8.gif)\n\n## Usage\n\n[Install Hyper](https://hyper.is/#installation) and add `hyperlinks` to `plugins`\nin `~/.hyper.js`.\n\n- Focus on the Hyper window and `Ctrl + C` to abort opening url.\n- Hold `Command` key and click a link to open it within Hyper (instead of in your default browser).\n\n### Customizing styles\n\nAdd custom styles to `termCSS` in your `~/.hyper.js`.\n\n```js\ntermCSS: `\n  x-screen a {\n    color: blue;\n  }\n\n  x-screen a.hover {\n    text-decoration: none;\n  }\n`\n```\n\n## Configuration\n\n### Change link target\n`defaultBrowser` (`boolean`)\nSets the location to open a clicked link. Holding the meta key while clicking will use the alternate target.\n\n- true - <default> open links in the default browser\n- false - opens link in the current Hyper pane\n\n### Change click action\n`clickAction` (`string`)\nChanges the action performed when clicking on a link\nIf set, holding the meta key while clicking will open the link based on the defaultBrowser value.\n\n- 'open' - <default> opens the link\n- 'copy' - pastes the link to your clipboard\n- 'ignore' - ignore non-Meta clicks on links\n\n```js\nmodule.exports = {\n  ...\n    config: {\n    ...\n    hyperlinks: {\n      clickAction: 'ignore',\n      defaultBrowser: false\n    }\n    ...\n  }\n  ...\n}\n```\n"
+  },
+  "artifacts": [],
+  "remote": {
+    "resolved": "https://registry.yarnpkg.com/hyperlinks/-/hyperlinks-0.5.0.tgz#e2e824d6f503653d26bf4e2735a3db24743f4d4e",
+    "type": "tarball",
+    "reference": "https://registry.yarnpkg.com/hyperlinks/-/hyperlinks-0.5.0.tgz",
+    "hash": "e2e824d6f503653d26bf4e2735a3db24743f4d4e",
+    "registry": "npm",
+    "packageName": "hyperlinks"
+  },
+  "registry": "npm",
+  "hash": "e2e824d6f503653d26bf4e2735a3db24743f4d4e"
+}
