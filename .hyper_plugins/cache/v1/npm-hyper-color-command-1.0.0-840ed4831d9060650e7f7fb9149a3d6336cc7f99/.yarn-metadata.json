@@ -1,0 +1,54 @@
+{
+  "manifest": {
+    "name": "hyper-color-command",
+    "version": "1.0.0",
+    "description": "Colorized syntax highlighting for the command line in Hyper",
+    "main": "index.js",
+    "scripts": {
+      "test": "xo"
+    },
+    "files": [
+      "index.js"
+    ],
+    "keywords": [
+      "hyper",
+      "color",
+      "command line",
+      "syntax highlighting"
+    ],
+    "author": {
+      "name": "Paul Molluzzo",
+      "email": "paul@molluzzo.com",
+      "url": "https://paul.molluzzo.com"
+    },
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/paulmolluzzo/hyper-color-command.git"
+    },
+    "devDependencies": {
+      "xo": "^0.18.0"
+    },
+    "xo": {
+      "envs": [
+        "browser"
+      ],
+      "space": true
+    },
+    "_registry": "npm",
+    "_loc": "/Users/tmorrow/.hyper_plugins/cache/v1/npm-hyper-color-command-1.0.0-840ed4831d9060650e7f7fb9149a3d6336cc7f99/package.json",
+    "readmeFilename": "README.md",
+    "readme": "# Hyper Color Command\n\nColorize your command line in Hyper with syntax highlighting for commands, arguments, flags, files, and operators.\n\n![](./screenshot.png)\n---\n\nMIT\n\n© 2017 Paul Molluzzo\n"
+  },
+  "artifacts": [],
+  "remote": {
+    "resolved": "https://registry.yarnpkg.com/hyper-color-command/-/hyper-color-command-1.0.0.tgz#840ed4831d9060650e7f7fb9149a3d6336cc7f99",
+    "type": "tarball",
+    "reference": "https://registry.yarnpkg.com/hyper-color-command/-/hyper-color-command-1.0.0.tgz",
+    "hash": "840ed4831d9060650e7f7fb9149a3d6336cc7f99",
+    "registry": "npm",
+    "packageName": "hyper-color-command"
+  },
+  "registry": "npm",
+  "hash": "840ed4831d9060650e7f7fb9149a3d6336cc7f99"
+}
