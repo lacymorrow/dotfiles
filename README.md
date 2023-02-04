@@ -38,3 +38,154 @@ Don't forget screensavers! I like the [Google Trends](https://www.google.com/tre
 - `./bootstrap.sh`
 
 > Shamelessly influenced by [mplacona](https://github.com/mplacona/dotfiles)
+
+## Notes
+
+coda FTP keys/passwords
+env keys/secrets or repo
+
+OSX FIRST SETUP
+
+- Connect iCloud (optional)
+
+- System Preferences
+  -- Trackpad > Tap
+  -- General > Dark menu theme
+  -- General > Jump to scroll where clicked
+  -- Screensaver > Google Trends
+  -- Keyboard > Repeat speed
+  -- Trackpad > Three finger
+  -- Sharing
+
+Taskbar
+
+- Battery: show percent
+
+Finder:
+
+- Create repo folder
+- Move applications to dock
+- Move Documents to dock
+
+Install:
+
+- Brew
+- Oh my zsh
+- NVM
+- Nvm install node
+- npm I -g yarn
+- Coda
+- Chrome
+- Firefox
+- Elgato Control Center
+- Obsidian (Maybe Joplin?)
+- Parsec
+- Private Internet Access
+- Steam
+- Sublime
+- Symless
+- TunnelBlick (For Router VPN)
+- Tunnelblick
+- Wireguard
+- VLC
+- VSCode
+- XCode
+- Warp Terminal
+- Wireguard (for unraid VPN)
+- ZoomInstaller
+
+Through App Store:
+
+- Amphetamine
+- Bettersnaptool
+- Coda
+- Flycut
+- Slack
+- Pages
+
+Terminal
+
+- Type ‘git’ to install Git
+
+LAN
+
+- Tunnelblick to connect to XR Router
+- Wireguard to connect to Server (Unraid)
+
+Remove Cruft from dock
+
+- Siri
+- Mail
+- Contacts
+- Maps
+- Facetime
+- Itunes
+- Books
+- App Store
+
+Add to dock
+
+- Chrome
+- Firefox
+- VScode
+- Sublime
+
+Chrome/Firefox
+
+- Bitwarden extension
+
+VSCode:
+
+- Add ‘code’ to path
+
+Flycut:
+
+- Change shortcut
+
+.dotfiles
+
+-BetterSnapTool (bettertouchtool)
+_-amphetamine
+-adobe
+-clamXav (antivirus)
+-etcher
+-firefox
+-flycut
+-hg-prompt
+-insimnia
+-kap
+-keka
+-ngrok
+-obs
+-Office
+-Popcorn time
+-Radiant (google play client)
+-screenhero
+-sketch
+-slack
+-sourcetree
+-SQLPro
+-steam
+_-coda
+_-codekit
+_-dash
+_-docker
+_-Gimp
+_-iterm
+_-sublime
+_-transmission
+_-unetbootn
+-unity
+_-unrarx
+_-vlc
+_-virtualbox
+_-vmware fusion
+\*-VVV + VV
+
+- Turbotax
+
+\*install via brew
+
+Sublime package control packages
+
+Google Trends screensaver
