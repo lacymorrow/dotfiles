@@ -1,31 +1,21 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/marcos.placona/.oh-my-zsh
+export ZSH=$HOME/.oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="powerlevel10k/powerlevel10k"
+ZSH_THEME="fino"
+#ZSH_THEME="uber"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion. Case
-# sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
 # DISABLE_AUTO_UPDATE="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+export UPDATE_ZSH_DAYS=30
 
 # Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
@@ -34,10 +24,10 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
+ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -56,58 +46,14 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git gitfast brew zsh-autosuggestions)
-
-# User configuration
-# export MANPATH="/usr/local/man:$MANPATH"
+plugins=(battery fasd z)
 
 source $ZSH/oh-my-zsh.sh
+source .aliases
 
-export PATH=$PATH:/usr/local/bin:/Users/mplacona/google-cloud-sdk/bin:/Users/mplacona/.rvm/gems/ruby-2.1.3/bin:/Users/mplacona/.rvm/gems/ruby-2.1.3@global/bin:/Users/mplacona/.rvm/rubies/ruby-2.1.3/bin:/usr/local/heroku/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/git/bin:/Users/mplacona/Installs/depot_tools:/usr/local/mysql/bin:/usr/local/sbin:/Users/mplacona/Library/Android/sdk/platform-tools:/Applications/gradle-2.2/bin:/usr/local/sbin:/Users/mplacona/.rvm/bin:/Users/mplacona/.rvm/bin:/Users/mplacona/Installs/depot_tools:/Users/mplacona/.rvm/bin:/Users/mplacona/Installs/depot_tools:/Users/mplacona/.rvm/bin:/Users/mplacona/Installs/depot_tools:/Users/mplacona/.rvm/bin:/Users/mplacona/Installs/depot_tools:/Users/mplacona/.rvm/bin
-# export MANPATH="/usr/local/man:$MANPATH"
+# User configuration
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+export PATH="$HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin"
 
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# ssh
-# export SSH_KEY_PATH="~/.ssh/dsa_id"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-#
-# ENVIRONMENT VARIABLES
-source ~/.profile
-source ~/.aliases
-
-#eval $(thefuck --alias)
-
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
-eval $(/usr/libexec/path_helper -s)
-export PATH="/usr/local/opt/ruby/bin:$PATH"
-export PATH="/opt/homebrew/bin:$PATH"
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-#export PATH="$HOME/.jenv/bin:$PATH"
-#eval "$(jenv init -)"
+# Streamline Icons
+export STREAMLINE_SECRET="59ecfd7f-ce2d-47d1-a489-bde22a5e219e"
