@@ -1,4 +1,5 @@
- # Aliases
+
+# Aliases
 alias prettyjson='python -m json.tool'
 alias adb-list='adb shell pm list packages -3'
 alias brewup='brew update; brew upgrade; brew cleanup; brew doctor'
@@ -13,6 +14,9 @@ alias ip="echo Your ip is; dig +short myip.opendns.com @resolver1.opendns.com;"
 alias du="du -sh * | sort -h"
 alias ll="ls -FGlAhp"
 alias c="clear"
+
+# Docker
+alias ddestroy="docker-compose down && docker rm -f $(docker ps -a -q) && docker volume rm $(docker volume ls -q)
 
 # Easier navigation: .., ..., ...., ....., ~ and -
 alias ..="cd .."
