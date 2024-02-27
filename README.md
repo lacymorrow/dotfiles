@@ -48,12 +48,9 @@ OSX FIRST SETUP
 - Connect iCloud (optional)
 
 - System Preferences
-  -- Trackpad > Tap
-  -- General > Dark menu theme
+  -- Enable Dictation
   -- General > Jump to scroll where clicked
   -- Screensaver > Google Trends
-  -- Keyboard > Repeat speed
-  -- Trackpad > Three finger
   -- Sharing
 
 Taskbar
