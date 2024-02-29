@@ -1,24 +1,25 @@
-# Streamline Icons
-export STREAMLINE_SECRET="59ecfd7f-ce2d-47d1-a489-bde22a5e219e"
+# Load backwards compatability - https://github.com/eddiezane/lunchy/issues/57
+time autoload -U +X bashcompinit && bashcompinit
+time autoload -U +X compinit && compinit
 
-# Set PATH, MANPATH, etc., for Homebrew.
+# Add `~/bin` to the `$PATH`
+export PATH="$HOME/bin:$PATH";
+
+# Homebrew: Set PATH, MANPATH, etc., for Homebrew.
 eval "$(/opt/homebrew/bin/brew shellenv)"
-
-# NGrok shell completions
-if command -v ngrok &>/dev/null; then
-eval "$(ngrok completion)"
-fi
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+# Ngrok shell completions
+if command -v ngrok &>/dev/null; then
+eval "$(ngrok completion)"
+fi
+
 # ZSH Suggestions - https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-# Add `~/bin` to the `$PATH`
-export PATH="$HOME/bin:$PATH";
 
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.

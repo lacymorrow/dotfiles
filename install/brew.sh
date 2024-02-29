@@ -21,7 +21,6 @@ brew analytics off
 brew tap buo/cask-upgrade
 
 # Install all brew apps (including CLI 'trash' and 'wget' commands)
-	# "node" \ # We use NVM
 	# "mercurial" \
 	# "awscli" \
 	# "python" \
@@ -31,11 +30,8 @@ brew tap buo/cask-upgrade
 	# "cmake" \
 	# Core application library for C - https://formulae.brew.sh/formula/glib
 	# "glib" \
-	# These add symlinks for GNU utilities - https://apple.stackexchange.com/a/69332
-	# "coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep" \
 
 for app in "node" \
-	"coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep" \
 	"ffmpeg" \
 	"glib" \
     "imagemagick" \
@@ -78,14 +74,16 @@ brew install --cask font-fira-code
 # a better `cat`
 brew install bat
 
-	# "hyper" \
+	# These add symlinks for GNU utilities - https://apple.stackexchange.com/a/69332
+	# "coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep" \
+
+ 	# "hyper" \
 	# "iterm2" \
 	# "sublime-text" \
-	# "vagrant" \
-	# "vmware-fusion" \
 for app in "dash" \
-	"amphetamine" \
+	"coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep" \
 	"angry-ip-scanner" \
+	"caffeine" \
 	"docker" \
 	"flycut" \
 	"cyberduck" \
@@ -99,20 +97,23 @@ for app in "dash" \
 	"slack" \
 	"spectacle" \
 	"spotify" \
-	"synergy-core" \
 	"transmission" \
 	"ultimaker-cura" \
 	"unetbootin" \
-	"unrarx" \
+	"vagrant"\
 	"vlc" \
 	"virtualbox" \
+	"vmware-fusion" \
 	"xquartz" \
     "zoom"; do
 	brew install --cask "${app}"
 done
 
-# Amphetamine
+
+# Keep Awake apps
+# Installe Mac Amphetamine & Caffeine
 mas install 937984704
+brew install --cask caffeine
 
 # Installs handy quick-look plugins https://github.com/sindresorhus/quick-look-plugins
 
