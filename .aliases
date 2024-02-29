@@ -6,7 +6,7 @@ alias brewup='brew update; brew upgrade; brew cleanup; brew doctor'
 alias speedtest='curl -o /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip'
 alias reload='source ~/.zshrc'
 alias placonaup='docker-compose up nginx-proxy placona jekyll'
-alias cat="bat" # colored cat command
+alias cat="bat"
 alias p="cd ~/Projects/"
 alias d="cd ~/Downloads/"
 alias ls="ls -lSrhat"
@@ -16,7 +16,7 @@ alias ll="ls -FGlAhp"
 alias c="clear"
 
 # Docker
-alias ddestroy="docker-compose down && docker rm -f $(docker ps -a -q) && docker volume rm $(docker volume ls -q)
+# alias ddestroy="docker-compose down && docker rm -f $(docker ps -a -q) && docker volume rm $(docker volume ls -q)"
 
 # Easier navigation: .., ..., ...., ....., ~ and -
 alias ..="cd .."
