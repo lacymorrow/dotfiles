@@ -4,7 +4,7 @@ editor = vim
 verbose = True
 
 [extensions]
-prompt = /Applications/hg-prompt/prompt.py
+# prompt = /Applications/hg-prompt/prompt.py
 
 [alias]
 fuck = revert --no-backup --all
