@@ -17,6 +17,11 @@ echo "Creating $olddir for backup of any existing dotfiles in ~"
 mkdir -p $olddir
 echo "...done"
 
+# Clone files
+echo "Cloning the dotfiles"
+git clone https://github.com/lacymorrow/dotfiles $dir
+echo "...done"
+
 # change to the dotfiles directory
 echo "Changing to the $dir directory"
 cd $dir
@@ -31,6 +36,6 @@ for file in $files; do
 done
 
 # Install ZSH deps
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+# git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
-source ~/.bashrc
+source ~/.zshrc
