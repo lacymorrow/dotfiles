@@ -7,7 +7,9 @@ Highly-opinionated, UNIX-friendly, macOS-directed
 
 ## Quick Start
 
-`bash <(curl -s https://raw.githubusercontent.com/lacymorrow/dotfiles/main/install.sh)`
+```
+bash <(curl -s https://raw.githubusercontent.com/lacymorrow/dotfiles/master/brew.sh)
+```
 
 ### Setup
 
