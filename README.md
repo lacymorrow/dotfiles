@@ -5,6 +5,10 @@
 
 Highly-opinionated, UNIX-friendly, macOS-directed
 
+## Quick Start
+
+`bash <(curl -s https://raw.githubusercontent.com/lacymorrow/dotfiles/main/install.sh)`
+
 ### Setup
 
 - Clone the repo
