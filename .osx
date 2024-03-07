@@ -22,8 +22,8 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 for app in "https://symless.com/synergy" \
 	"warp.dev" \	
+	"https://cursor.sh" \
 	"https://www.privateinternetaccess.com"; do
-	"https://cursor.sh"; do
 	open "${app}"
 done
 
