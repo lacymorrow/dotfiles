@@ -1,4 +1,4 @@
-# tap "buo/cask-upgrade"
+tap "buo/cask-upgrade"
 # tap "heroku/brew"
 # tap "homebrew/bundle"
 # tap "homebrew/cask"
@@ -7,23 +7,12 @@
 # tap "osx-cross/arm"
 # tap "osx-cross/avr"
 # tap "qmk/qmk"
-# tap "twilio/brew"
 # Programmable completion for Bash 3.2
 # brew "bash-completion"
-# Extract files from Microsoft cabinet files
-# brew "cabextract"
-# Interpreted, interactive, object-oriented programming language
-# brew "python@3.9"
 # Core application library for C
-brew "glib"
-# Manage compile and link flags for libraries
-# brew "pkg-config"
-# Tool Command Language
-# brew "tcl-tk"
-# Vector graphics library with cross-device output support
-# brew "cairo"
+# brew "glib"
 # Cross-platform make
-brew "cmake"
+# brew "cmake"
 # Dependency Manager for PHP
 # brew "composer"
 # GNU File, Shell, and Text utilities
@@ -33,7 +22,7 @@ brew "coreutils"
 # Open source suite of directory software
 # brew "openldap"
 # Get a file from an HTTP, HTTPS or FTP server
-brew "curl"
+# brew "curl"
 # GNU multiple precision arithmetic library
 # brew "gmp"
 # Generic library support script
@@ -108,13 +97,13 @@ brew "mas"
 # brew "nginx"
 brew "node"
 # Manage multiple Node.js versions
-# brew "nvm"
+brew "nvm"
 # General-purpose scripting language
 # brew "php@7.2"
 # Object-relational database system
 # brew "postgresql"
 # Framework for managing multi-language pre-commit hooks
-brew "pre-commit"
+# brew "pre-commit"
 # Install various Ruby versions and implementations
 # brew "ruby-build"
 # Ruby version manager
@@ -142,6 +131,7 @@ brew "wine"
 # General-purpose lossless data-compression library
 brew "zlib"
 # zsh plugins
+brew "zsh-autosuggestions"
 brew "zsh-completions"
 brew "zsh-syntax-highlighting"
 
@@ -157,7 +147,7 @@ brew "zsh-syntax-highlighting"
 # cask "brackets"
 # cask "chefdk"
 # Automated testing of webapps for Google Chrome
-cask "chromedriver"
+# cask "chromedriver"
 # App for building websites
 # cask "codekit"
 # Server and cloud storage browser
@@ -170,15 +160,12 @@ cask "dash"
 cask "firefox"
 # Free and open-source image editor
 cask "gimp"
-# Terminal built on web technologies
-# cask "hyper"
 # Terminal emulator as alternative to Apple's Terminal app
 cask "iterm2"
 # Reverse proxy, secure introspectable tunnels to localhost
 cask "ngrok"
-# cask "now"
 # Collaboration platform for API development
-# cask "postman"
+cask "postman"
 # QuickLook plug-in that renders source code with syntax highlighting
 # cask "qlcolorcode"
 # QuickLook generator for Markdown files
