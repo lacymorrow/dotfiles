@@ -21,6 +21,7 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 ###############################################################################
 
 for app in "https://symless.com/synergy" \
+	"warp.dev" \	
 	"https://www.privateinternetaccess.com"; do
 	open "${app}"
 done
@@ -356,9 +357,9 @@ defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
 # /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:iconSize 80" ~/Library/Preferences/com.apple.finder.plist
 # /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 80" ~/Library/Preferences/com.apple.finder.plist
 
-# Use list view in all Finder windows by default
+# Use list view in all Finder windows by default "Nlsv"
 # Four-letter codes for the other view modes: `icnv`, `clmv`, `glyv`
-defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
 
 # Disable the warning before emptying the Trash
 # defaults write com.apple.finder WarnOnEmptyTrash -bool false
@@ -394,6 +395,10 @@ defaults write com.apple.dock mouse-over-hilite-stack -bool true
 # Set the icon size of Dock items to 36 pixels
 defaults write com.apple.dock tilesize -int 36
 
+# Set the size of Dock icons when hovered
+defaults write com.apple.dock tilesize -int 36
+
+
 # Change minimize/maximize window effect
 # defaults write com.apple.dock mineffect -string "scale"
 
@@ -401,7 +406,7 @@ defaults write com.apple.dock tilesize -int 36
 # defaults write com.apple.dock minimize-to-application -bool true
 
 # Enable spring loading for all Dock items
-# defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
+defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
 
 # Show indicator lights for open applications in the Dock
 defaults write com.apple.dock show-process-indicators -bool true
@@ -669,7 +674,7 @@ defaults write com.apple.appstore ShowDebugMenu -bool true
 defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
 
 # Check for software updates daily, not just once per week
-defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
+# defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
 
 # Download newly available updates in background
 defaults write com.apple.SoftwareUpdate AutomaticDownload -int 1
@@ -731,7 +736,7 @@ defaults write com.google.Chrome.canary PMPrintingExpandedStateForPrint2 -bool t
 ###############################################################################
 
 # Set up my preferred keyboard shortcuts
-cp -r init/spectacle.json ~/Library/Application\ Support/Spectacle/Shortcuts.json 2> /dev/null
+cp -r settings/BetterTouchTool ~/Library/Application\ Support/BetterTouchTool/ 2> /dev/null
 
 ###############################################################################
 # Transmission.app                                                            #
