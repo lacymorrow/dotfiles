@@ -32,10 +32,12 @@ brew tap buo/cask-upgrade
 	# "glib" \
 	"zsh-completions" \
 
-for app in "node" \
+	# "node" \
+
+for app in "bat" \
 	"ffmpeg" \
 	"glib" \
-    "imagemagick" \
+	"imagemagick" \
 	"mas" \
 	"rpm" \
 	"snapcraft" \
@@ -44,6 +46,7 @@ for app in "node" \
 	"wine" \
 	"zlib" \
 	"zsh-autosuggestions" \
+	"zsh-completions" \
 	"zsh-syntax-highlighting"; do
 	brew install "${app}"
 done
@@ -72,14 +75,10 @@ brew install --cask font-fira-code
 
 # *********************************
 # a better `cat`
-brew install bat
 
 	# These add symlinks for GNU utilities - https://apple.stackexchange.com/a/69332
 	# "coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep" \
 
- 	# "hyper" \
-	# "iterm2" \
-	# "sublime-text" \
 for app in "dash" \
 	"coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep" \
 	"angry-ip-scanner" \
@@ -110,16 +109,17 @@ for app in "dash" \
 done
 
 
-# Keep Awake apps
-# Installe Mac Amphetamine & Caffeine
-mas install 937984704
-brew install --cask caffeine
+# Install Mac Apps
+mas install 937984704 # Amphetamine
+mas install 417375580 # BetterSnapTool
+mas install 442160987 # Flycut
+# mas install 408981434 # iMovie
 
 # Installs handy quick-look plugins https://github.com/sindresorhus/quick-look-plugins
 
 	# "qlcolorcode" \ # or syntax-highlight
 	# "quicklookase" \ # Adobe Color swatch exchanf
-for app in "apparency" \
+for app in "qlcolorcode" \
 	"qlstephen" \
 	"qlmarkdown" \
 	"quicklook-json" \
