@@ -18,17 +18,6 @@ if command -v ngrok &>/dev/null; then
 eval "$(ngrok completion)"
 fi
 
-# ZSH Suggestions - https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-# Load the shell dotfiles, and then some:
-# * ~/.path can be used to extend `$PATH`.
-# * ~/.extra can be used for other settings you don’t want to commit.
-for file in ~/.{path,exports,aliases,docker_aliases,functions,extra,zshrc}; do
-	[ -r "$file" ] && [ -f "$file" ] && source "$file";
-done;
-unset file;
-
 # Enable some Bash 4 features when possible:
 # * `autocd`, e.g. `**/qux` will enter `./foo/bar/baz/qux`
 # * Recursive globbing, e.g. `echo **/*.txt`
@@ -59,3 +48,11 @@ complete -W "NSGlobalDomain" defaults;
 
 # Add `killall` tab completion for common apps
 complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari SystemUIServer Terminal Twitter" killall;
+
+# Load the shell dotfiles, and then some:
+# * ~/.path can be used to extend `$PATH`.
+# * ~/.extra can be used for other settings you don’t want to commit.
+for file in ~/.{path,exports,aliases,docker_aliases,functions,extra,zshrc}; do
+	[ -r "$file" ] && [ -f "$file" ] && source "$file";
+done;
+unset file;
