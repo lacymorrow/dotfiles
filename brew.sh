@@ -30,7 +30,7 @@ brew tap buo/cask-upgrade
 	# "cmake" \
 	# Core application library for C - https://formulae.brew.sh/formula/glib
 	# "glib" \
-	"zsh-completions" \
+	# "zsh-completions" \
 
 	# "node" \
 
@@ -78,11 +78,11 @@ brew install --cask font-fira-code
 
 	# These add symlinks for GNU utilities - https://apple.stackexchange.com/a/69332
 	# "coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep" \
+	# "caffeine" \
 
 for app in "dash" \
 	"coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep" \
 	"angry-ip-scanner" \
-	"caffeine" \
 	"docker" \
 	"flycut" \
 	"cyberduck" \
@@ -112,7 +112,7 @@ done
 # Install Mac Apps
 mas install 937984704 # Amphetamine
 mas install 417375580 # BetterSnapTool
-mas install 442160987 # Flycut
+# mas install 442160987 # Flycut
 # mas install 408981434 # iMovie
 
 # Installs handy quick-look plugins https://github.com/sindresorhus/quick-look-plugins
