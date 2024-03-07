@@ -737,7 +737,8 @@ defaults write com.google.Chrome.canary PMPrintingExpandedStateForPrint2 -bool t
 ###############################################################################
 
 # Set up my preferred keyboard shortcuts
-cp -r settings/BetterTouchTool ~/Library/Application\ Support/BetterTouchTool/ 2> /dev/null
+cp -r settings/BetterSnapTool ~/Library/Application\ Support/BetterSnapTool/ 2> /dev/null
+cp -r settings/Preferences ~/Library/Preferences 2> /dev/null
 
 ###############################################################################
 # Transmission.app                                                            #
