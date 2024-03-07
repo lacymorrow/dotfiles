@@ -30,23 +30,23 @@ brew tap buo/cask-upgrade
 	# "cmake" \
 	# Core application library for C - https://formulae.brew.sh/formula/glib
 	# "glib" \
+	"zsh-completions" \
 
-# for app in "node" \
-# 	"ffmpeg" \
-# 	"glib" \
-#     "imagemagick" \
-# 	"mas" \
-# 	"rpm" \
-# 	"snapcraft" \
-# 	"trash" \
-# 	"wget" \
-# 	"wine" \
-# 	"zlib" \
-# 	"zsh-autosuggestions" \
-# 	"zsh-completions" \
-# 	"zsh-syntax-highlighting"; do
-# 	brew install "${app}"
-# done
+for app in "node" \
+	"ffmpeg" \
+	"glib" \
+    "imagemagick" \
+	"mas" \
+	"rpm" \
+	"snapcraft" \
+	"trash" \
+	"wget" \
+	"wine" \
+	"zlib" \
+	"zsh-autosuggestions" \
+	"zsh-syntax-highlighting"; do
+	brew install "${app}"
+done
 
 
 # *********************************
