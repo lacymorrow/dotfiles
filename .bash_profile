@@ -3,7 +3,7 @@ export PATH="$HOME/bin:$PATH";
 
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
-for file in ~/.{path,exports,aliases,docker_aliases,functions,extra,zshrc}; do
+for file in ~/.{path,exports,aliases,docker_aliases,functions,extra}; do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file";
 done;
 unset file;
