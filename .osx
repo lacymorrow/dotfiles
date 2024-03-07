@@ -22,6 +22,7 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 for app in "https://symless.com/synergy" \
 	"https://www.privateinternetaccess.com"; do
+	"https://cursor.sh"; do
 	open "${app}"
 done
 
@@ -367,7 +368,7 @@ defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
 defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
 
 # Show the ~/Library folder
-chflags nohidden ~/Library 
+chflags nohidden ~/Library
 # chflags nohidden ~/Library && xattr -d com.apple.FinderInfo ~/Library
 
 # Show the /Volumes folder
