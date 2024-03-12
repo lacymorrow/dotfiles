@@ -11,8 +11,6 @@ olddir=~/dotfiles_old             # old dotfiles backup directory
 
 ##########
 
-xcode-select --install
-
 # create dotfiles_old in homedir
 echo "Creating $olddir for backup of any existing dotfiles in ~"
 mkdir -p $olddir
