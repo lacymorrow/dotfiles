@@ -1,3 +1,10 @@
+[user]
+	name = Lacy Morrow
+	email = me@lacymorrow.com
+
+# [push]
+#   default = simple
+
 [alias]
 
 	# View abbreviated SHA, description, and history graph of the latest 20 commits.
@@ -228,8 +235,4 @@
 	required = true
 
 
-# [push]
-#   default = simple
-[user]
-  name = Lacy Morrow
-  email = me@lacymorrow.com
+
