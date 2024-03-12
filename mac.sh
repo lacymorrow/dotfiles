@@ -51,12 +51,14 @@ cp -r settings/Preferences ~/Library/Preferences 2> /dev/null
 # Manual URL Installs                                                         #
 ###############################################################################
 
+bash "$dir/.osx"
+
+bash "$dir/node.sh"
+
+bash "$dir/brew.sh"
+
 for app in "https://symless.com/synergy" \
 	"https://cursor.sh" \
 	"https://www.privateinternetaccess.com"; do
 	open "${app}"
 done
-
-bash "$dir/node.sh"
-
-bash "$dir/brew.sh"
