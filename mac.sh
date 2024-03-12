@@ -30,9 +30,33 @@ echo "...done"
 
 # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
 echo "Moving any existing dotfiles from ~ to $olddir"
-for file in "$dir"/home/.*; do
+
+# matches all dotfiles, except . and ..
+for file in "$dir"/home/.[!.]*; do
     # mv ~/$file ~/dotfiles_old/
     echo "Creating symlink to $file in home directory."
     # ln -s $dir/$file ~/$file
 done
 
+###############################################################################
+# Copy Files
+###############################################################################
+
+# Set up my preferred keyboard shortcuts
+cp -r settings/BetterSnapTool ~/Library/Application\ Support/BetterSnapTool/ 2> /dev/null
+cp -r settings/Preferences ~/Library/Preferences 2> /dev/null
+
+
+###############################################################################
+# Manual URL Installs                                                         #
+###############################################################################
+
+for app in "https://symless.com/synergy" \
+	"https://cursor.sh" \
+	"https://www.privateinternetaccess.com"; do
+	open "${app}"
+done
+
+bash "$dir/node.sh"
+
+bash "$dir/brew.sh"
