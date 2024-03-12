@@ -28,15 +28,19 @@ echo "Changing to the $dir directory"
 cd $dir
 echo "...done"
 
-# move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
-echo "Moving any existing dotfiles from ~ to $olddir"
+if [ -d "$dir" ]; then
 
-# matches all dotfiles, except . and ..
-for file in "$dir"/home/.[!.]*; do
-    # mv ~/$file ~/dotfiles_old/
-    echo "Creating symlink to $file in home directory."
-    # ln -s $dir/$file ~/$file
-done
+    # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
+    echo "Moving any existing dotfiles from ~ to $olddir"
+
+    # matches all dotfiles, except . and ..
+    for file in "$dir"/home/.[!.]*; do
+        # mv ~/$file ~/dotfiles_old/
+        echo "Creating symlink to $file in home directory."
+        # ln -s $dir/$file ~/$file
+    done
+
+fi
 
 ###############################################################################
 # Copy Files
