@@ -12,8 +12,8 @@ echo ""
 
 # Install Homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-eval "$(/opt/homebrew/bin/brew shellenv &> /dev/null)" 
-eval "$(/usr/local/bin/brew shellenv &> /dev/null)" 
+eval "$(/opt/homebrew/bin/brew shellenv)" 
+eval "$(/usr/local/bin/brew shellenv)" 
 
 # Disable telemetry
 brew analytics off
