@@ -6,7 +6,7 @@ time autoload -U +X compinit && compinit
 export PATH="$HOME/bin:$PATH";
 
 # Homebrew: Set PATH, MANPATH, etc., for Homebrew.
-eval "$(/opt/homebrew/bin/brew shellenv)" # non-intel mac
+# eval "$(/opt/homebrew/bin/brew shellenv)" # apple-silicon mac
 eval "$(/usr/local/bin/brew shellenv)"  # intel mac
 
 # Load the shell dotfiles, and then some:
