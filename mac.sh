@@ -19,9 +19,9 @@ echo "...done"
 echo "> Clone firmware"
 
 # Clone files
-echo "Cloning the dotfiles"
-git clone --single-branch --branch master https://github.com/lacymorrow/dotfiles.git $dir
-echo "...done"
+# echo "Cloning the dotfiles"
+# git clone --single-branch --branch master https://github.com/lacymorrow/dotfiles.git $dir
+# echo "...done"
 
 # change to the dotfiles directory
 echo "Changing to the $dir directory"
@@ -30,14 +30,14 @@ echo "...done"
 
 if [ -d "$dir" ]; then
 
-    # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
+    # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks
     echo "Moving any existing dotfiles from ~ to $olddir"
 
     # matches all dotfiles, except . and ..
     for file in "$dir"/home/.[!.]*; do
-        # mv ~/$file ~/dotfiles_old/
+        mv  ~/$(basename "$file") $olddir
         echo "Creating symlink to $file in home directory."
-        # ln -s $dir/$file ~/$file
+        ln -s $file ~/$(basename "$file")
     done
 
 fi
@@ -47,22 +47,25 @@ fi
 ###############################################################################
 
 # Set up my preferred keyboard shortcuts
-cp -r settings/BetterSnapTool ~/Library/Application\ Support/BetterSnapTool/ 2> /dev/null
-cp -r settings/Preferences ~/Library/Preferences 2> /dev/null
+# cp -r settings/BetterSnapTool ~/Library/Application\ Support/BetterSnapTool/ 2> /dev/null
+# cp -r settings/Preferences ~/Library/Preferences 2> /dev/null
 
 
 ###############################################################################
 # Manual URL Installs                                                         #
 ###############################################################################
 
-bash "$dir/.osx"
+# bash "$dir/.osx"
 
-bash "$dir/node.sh"
+# bash "$dir/node.sh"
 
-bash "$dir/brew.sh"
+# bash "$dir/brew.sh"
 
-for app in "https://symless.com/synergy" \
-	"https://cursor.sh" \
-	"https://www.privateinternetaccess.com"; do
-	open "${app}"
-done
+# Install oh my zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# for app in "https://symless.com/synergy" \
+# 	"https://cursor.sh" \
+# 	"https://www.privateinternetaccess.com"; do
+# 	open "${app}"
+# done
