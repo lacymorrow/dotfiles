@@ -11,10 +11,11 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Install latest Node
-nvm i node
+nvm install node
 
 # Install NPM global packages
 for app in "yarn" \
+	"eslint" \
 	; do
 	npm install -g "${app}"
 done
