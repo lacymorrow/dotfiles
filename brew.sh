@@ -12,7 +12,8 @@ echo ""
 
 # Install Homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-eval "$(/opt/homebrew/bin/brew shellenv)"
+eval "$(/opt/homebrew/bin/brew shellenv)" 
+eval "$(/usr/local/bin/brew shellenv)" 
 
 # Disable telemetry
 brew analytics off
@@ -104,6 +105,7 @@ for app in "dash" \
 	"virtualbox" \
 	"vmware-fusion" \
 	"xquartz" \
+	"warp" \
     "zoom"; do
 	brew install --cask "${app}"
 done
