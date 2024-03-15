@@ -1,5 +1,3 @@
-echo "Loaded .zprofile"
-
 # Load backwards compatability - https://github.com/eddiezane/lunchy/issues/57
 time autoload -U +X bashcompinit && bashcompinit
 time autoload -U +X compinit && compinit
@@ -8,12 +6,22 @@ time autoload -U +X compinit && compinit
 export PATH="$HOME/bin:$PATH";
 
 # Homebrew: Set PATH, MANPATH, etc., for Homebrew.
-# eval "$(/opt/homebrew/bin/brew shellenv)" # non-intel mac
-eval "$(/usr/local/bin/brew shellenv)" # non-intel mac
+# eval "$(/opt/homebrew/bin/brew shellenv)" # apple-silicon mac
+eval "$(/usr/local/bin/brew shellenv)"  # intel mac
+
+# Load the shell dotfiles, and then some:
+# * ~/.path can be used to extend `$PATH`.
+# * ~/.extra can be used for other settings you don’t want to commit.
+for file in ~/.{path,exports,aliases,docker_aliases,functions,extra,zshrc}; do
+	[ -r "$file" ] && [ -f "$file" ] && source "$file";
+done;
+unset file;
 
 # https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md#oh-my-zsh
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
+# https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
@@ -25,17 +33,6 @@ if command -v ngrok &>/dev/null; then
 eval "$(ngrok completion)"
 fi
 
-<<<<<<< HEAD
-=======
-# Load the shell dotfiles, and then some:
-# * ~/.path can be used to extend `$PATH`.
-# * ~/.extra can be used for other settings you don’t want to commit.
-for file in ~/.{path,exports,aliases,docker_aliases,functions,extra}; do
-	[ -r "$file" ] && [ -f "$file" ] && source "$file";
-done;
-unset file;
-
->>>>>>> 83da30707732b525ddf564189731d7e2f7e02af6
 # Enable some Bash 4 features when possible:
 # * `autocd`, e.g. `**/qux` will enter `./foo/bar/baz/qux`
 # * Recursive globbing, e.g. `echo **/*.txt`
@@ -67,10 +64,3 @@ complete -W "NSGlobalDomain" defaults;
 # Add `killall` tab completion for common apps
 complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari SystemUIServer Terminal Twitter" killall;
 
-# Load the shell dotfiles, and then some:
-# * ~/.path can be used to extend `$PATH`.
-# * ~/.extra can be used for other settings you don’t want to commit.
-for file in ~/.{path,exports,aliases,docker_aliases,functions,extra,zshrc}; do
-	[ -r "$file" ] && [ -f "$file" ] && source "$file";
-done;
-unset file;

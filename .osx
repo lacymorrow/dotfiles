@@ -16,16 +16,10 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until `.osx` has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-###############################################################################
-# Manual URL Installs                                                         #
-###############################################################################
 
-for app in "https://symless.com/synergy" \
-	"warp.dev" \	
-	"https://cursor.sh" \
-	"https://www.privateinternetaccess.com"; do
-	open "${app}"
-done
+###############################################################################
+# Universal Access                                                      #
+###############################################################################
 
 # Zoom: Use scroll gesture with the Ctrl (^) modifier key to zoom
 sudo defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
@@ -33,6 +27,7 @@ sudo defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262
 
 # Follow the keyboard focus while zoomed in
 sudo defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+
 
 ###############################################################################
 # SSD-specific tweaks                                                         #
@@ -731,14 +726,6 @@ defaults write com.google.Chrome.canary DisablePrintPreview -bool true
 # Expand the print dialog by default
 defaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true
 defaults write com.google.Chrome.canary PMPrintingExpandedStateForPrint2 -bool true
-
-###############################################################################
-# Spectacle.app                                                               #
-###############################################################################
-
-# Set up my preferred keyboard shortcuts
-cp -r settings/BetterSnapTool ~/Library/Application\ Support/BetterSnapTool/ 2> /dev/null
-cp -r settings/Preferences ~/Library/Preferences 2> /dev/null
 
 ###############################################################################
 # Transmission.app                                                            #
