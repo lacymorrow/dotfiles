@@ -2,6 +2,14 @@
 ############################
 # .make.sh
 # This script creates symlinks from the home directory to any desired dotfiles in ~/dotfiles
+#
+# ORDER IS IMPORTANT:
+# - Copy dotfiles to homefolder
+# - Install Oh My Zsh (depends on dotfiles in home)
+# - Install brew
+# - Install NVM
+# - Install node `nvm install node`
+# - Install node packages (depends on node)
 ############################
 
 ########## Variables
@@ -30,7 +38,7 @@ echo "...done"
 
 if [ -d "$dir" ]; then
 
-    # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
+    # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks
     echo "Moving any existing dotfiles from ~ to $olddir"
 
     # matches all dotfiles, except . and ..
