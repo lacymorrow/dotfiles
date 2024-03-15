@@ -8,7 +8,21 @@ Highly-opinionated, UNIX-friendly, macOS-directed
 ## Quick Start
 
 ```
+bash <(curl -s https://raw.githubusercontent.com/lacymorrow/dotfiles/master/mac.sh)
+```
+
+Or...
+
+```
 bash <(curl -s https://raw.githubusercontent.com/lacymorrow/dotfiles/master/brew.sh)
+```
+
+```
+bash <(curl -s https://raw.githubusercontent.com/lacymorrow/dotfiles/master/node.sh)
+```
+
+```
+bash <(curl -s https://raw.githubusercontent.com/lacymorrow/dotfiles/master/.osx)
 ```
 
 ### Setup
