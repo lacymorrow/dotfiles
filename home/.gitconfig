@@ -7,6 +7,9 @@
 
 [alias]
 
+	# List the default (main) branch for the repository
+	default = !git branch -rl '*/HEAD' | rev | cut -d/ -f1 | rev
+
 	# View abbreviated SHA, description, and history graph of the latest 20 commits.
 	l = log --pretty=oneline -n 20 --graph --abbrev-commit
 
@@ -73,6 +76,16 @@
 	# Show the user email for the current repository.
 	whoami = config user.email
 
+	# Push a fresh branch to remote
+	pushup = !git push --set-upstream origin `git symbolic-ref --short HEAD`
+	pu = pushup
+
+	# Reset branch to last commit
+	fuck = reset HEAD --hard
+
+	# Show files ignored by git:
+	ign = ls-files -o -i --exclude-standard
+
 	st = status
 	ch = checkout
 	ck = checkout
@@ -96,12 +109,8 @@
 	up = pull --rebase
 	pul = pull
 	pulll = pull
-	pu = !git push --set-upstream origin `git symbolic-ref --short HEAD`
-	pushup = !git push --set-upstream origin `git symbolic-ref --short HEAD`
-	fuck = reset HEAD --hard
 
-	# Show files ignored by git:
-	ign = ls-files -o -i --exclude-standard
+
 
 [apply]
 
@@ -190,7 +199,7 @@
 	# hint: Pulling without specifying how to reconcile divergent branches is
 	# hint: discouraged. You can squelch this message by running one of the following
 	# hint: commands sometime before your next pull:
-	# hint: 
+	# hint:
 	# hint:   git config pull.rebase false  # merge (the default strategy)
 	# hint:   git config pull.rebase true   # rebase
 	# hint:   git config pull.ff only       # fast-forward only
