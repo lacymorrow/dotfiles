@@ -15,7 +15,9 @@ nvm install node
 
 # Install NPM global packages
 for app in "yarn" \
+	"pnpm" \
 	"eslint" \
+	"npm-check-updates" \
 	; do
 	npm install -g "${app}"
 done
