@@ -1,3 +1,6 @@
+# IDE Aliases
+alias c="code"
+alias c="cursor"
 
 # Aliases
 alias prettyjson='python -m json.tool'
@@ -13,7 +16,6 @@ alias ls="ls -lSrhat"
 alias ip="echo Your ip is; dig +short myip.opendns.com @resolver1.opendns.com;"
 alias du="du -sh * | sort -h"
 alias ll="ls -FGlAhp"
-alias c="clear"
 
 # Docker
 # alias ddestroy="docker-compose down && docker rm -f $(docker ps -a -q) && docker volume rm $(docker volume ls -q)"
