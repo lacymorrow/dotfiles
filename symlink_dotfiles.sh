@@ -17,7 +17,7 @@ echo "Creating $olddir for backup of any existing dotfiles in ~"
 mkdir -p $olddir
 echo "...done"
 
-echo "> Clone firmware"
+# echo "> Clone firmware"
 
 # Clone files
 # echo "Cloning the dotfiles"
