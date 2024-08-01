@@ -12,6 +12,11 @@
 # - Install node packages (depends on node)
 ############################
 
+########## Variables
+
+dir=~/dotfiles                    # dotfiles directory
+olddir=~/dotfiles_old             # old dotfiles backup directory
+
 bash "$dir/.osx"
 
 bash "$dir/brew.sh"
