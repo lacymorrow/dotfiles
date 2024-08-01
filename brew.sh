@@ -69,44 +69,43 @@ brew install --cask visual-studio-code
 # ln -s $DIR/visual-studio-code-settings.json ~/Library/Application\ Support/Code/User/settings.json
 
 # *********************************
-# fira code
-echo "installing fira code"
-brew tap homebrew/cask-fonts
-brew install --cask font-fira-code
+# fira code font
+# echo "installing fira code"
+# brew tap homebrew/cask-fonts
+# brew install --cask font-fira-code
 
 # *********************************
-# a better `cat`
 
 	# These add symlinks for GNU utilities - https://apple.stackexchange.com/a/69332
 	# "coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep" \
 	# "caffeine" \
+	# "dash" \
+	# "iterm2" \
+	# "vmware-fusion" \
+	# "ultimaker-cura" \
+	# "flycut" \
 
-for app in "dash" \
-	"coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep" \
+for app in "coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep" \
 	"angry-ip-scanner" \
 	"docker" \
-	"flycut" \
 	"cyberduck" \
 	"firefox" \
 	"google-chrome" \
 	"gimp" \
 	"inkscape" \
-	"iterm2" \
 	"ngrok" \
 	"postman" \
 	"slack" \
 	"spectacle" \
 	"spotify" \
 	"transmission" \
-	"ultimaker-cura" \
 	"unetbootin" \
 	"vagrant"\
 	"vlc" \
 	"virtualbox" \
-	"vmware-fusion" \
 	"xquartz" \
 	"warp" \
-    "zoom"; do
+ 	"zoom"; do
 	brew install --cask "${app}"
 done
 
@@ -114,7 +113,7 @@ done
 # Install Mac Apps
 mas install 937984704 # Amphetamine
 mas install 417375580 # BetterSnapTool
-# mas install 442160987 # Flycut
+mas install 442160987 # Flycut
 # mas install 408981434 # iMovie
 
 # Installs handy quick-look plugins https://github.com/sindresorhus/quick-look-plugins
