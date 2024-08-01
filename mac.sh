@@ -12,11 +12,11 @@
 # - Install node packages (depends on node)
 ############################
 
-# bash "$dir/.osx"
+bash "$dir/.osx"
 
-# bash "$dir/brew.sh"
+bash "$dir/brew.sh"
 
-# bash "$dir/node.sh"
+bash "$dir/node.sh"
 
 # Install oh my zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
