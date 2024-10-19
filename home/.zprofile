@@ -64,3 +64,6 @@ complete -W "NSGlobalDomain" defaults;
 # Add `killall` tab completion for common apps
 complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari SystemUIServer Terminal Twitter" killall;
 
+
+# Created by `pipx` on 2024-09-05 23:39:51
+export PATH="$PATH:/Users/lacy/.local/bin"
