@@ -14,8 +14,11 @@ osascript -e 'tell application "System Preferences" to quit'
 sudo -v
 
 # Keep-alive: update existing `sudo` time stamp until `.osx` has finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
-
+while true; do
+	sudo -n true
+	sleep 60
+	kill -0 "$$" || exit
+done 2>/dev/null &
 
 ###############################################################################
 # Universal Access                                                      #
@@ -27,7 +30,6 @@ sudo defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262
 
 # Follow the keyboard focus while zoomed in
 sudo defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
-
 
 ###############################################################################
 # SSD-specific tweaks                                                         #
@@ -51,10 +53,11 @@ sudo defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool tr
 ###############################################################################
 
 # Set computer name (as done via System Preferences → Sharing)
-#sudo scutil --set ComputerName "0x6D746873"
-#sudo scutil --set HostName "0x6D746873"
-#sudo scutil --set LocalHostName "0x6D746873"
-#sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "0x6D746873"
+
+sudo scutil --set ComputerName "Graphite"
+sudo scutil --set HostName "Graphite"
+sudo scutil --set LocalHostName "Graphite"
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "Graphite"
 
 # Set sidebar icon size to medium
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 1
@@ -156,7 +159,6 @@ defaults -currentHost write NSGlobalDomain com.apple.trackpad.threeFingerSwipeGe
 # https://sudoai.dev/
 defaults write com.apple.speech.recognition.AppleSpeechRecognition.prefs DictationIMMasterSwitchOff -bool false
 
-
 # Increase sound quality for Bluetooth headphones/headsets
 defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
 
@@ -182,7 +184,6 @@ defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryCli
 # (e.g. enable Tab in modal dialogs)
 # defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
-
 # Disable press-and-hold for keys in favor of key repeat
 # defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
@@ -203,7 +204,7 @@ defaults write NSGlobalDomain AppleMetricUnits -bool true
 sudo defaults write /Library/Preferences/com.apple.loginwindow showInputMenu -bool true
 
 # echo "Stop Music from responding to the keyboard media keys"
-launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist 2> /dev/null
+launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist 2>/dev/null
 
 ###############################################################################
 # Energy saving                                                               #
@@ -290,7 +291,7 @@ defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
 defaults write com.apple.finder AppleShowAllFiles -bool true
 
 # Finder: show all filename extensions
-defaults write NSGlobalDomain launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist 2> /dev/null -bool true
+defaults write NSGlobalDomain launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist -bool true 2>/dev/null
 
 # Finder: show status bar
 defaults write com.apple.finder ShowStatusBar -bool true
@@ -393,7 +394,6 @@ defaults write com.apple.dock tilesize -int 36
 
 # Set the size of Dock icons when hovered
 defaults write com.apple.dock tilesize -int 36
-
 
 # Change minimize/maximize window effect
 # defaults write com.apple.dock mineffect -string "scale"
@@ -782,6 +782,6 @@ for app in "Activity Monitor" \
 	"SystemUIServer" \
 	"Terminal" \
 	"Transmission"; do
-	killall "${app}" &> /dev/null
+	killall "${app}" &>/dev/null
 done
 echo "Done. Note that some of these changes require a logout/restart to take effect."
