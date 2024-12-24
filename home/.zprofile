@@ -3,7 +3,7 @@ time autoload -U +X bashcompinit && bashcompinit
 time autoload -U +X compinit && compinit
 
 # Add `~/bin` to the `$PATH`
-export PATH="/Users/lmorrow/.volta/bin:$HOME/bin:$PATH"
+export PATH="/Users/lmorrow/.volta/bin:$HOME/bin:/Users/lmorrow/Library/Python/3.9/bin:$PATH"
 
 # Homebrew: Set PATH, MANPATH, etc., for Homebrew.
 # eval "$(/opt/homebrew/bin/brew shellenv)" # apple-silicon mac
