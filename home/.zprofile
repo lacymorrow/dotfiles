@@ -66,6 +66,7 @@ complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari SystemUIServ
 
 # Created by `pipx` on 2024-09-05 23:39:51
 export PATH="$PATH:/Users/lacy/.local/bin"
+
 # Deno
 fpath=(~/.zsh $fpath)
 autoload -Uz compinit
