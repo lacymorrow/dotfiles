@@ -3,11 +3,11 @@ time autoload -U +X bashcompinit && bashcompinit
 time autoload -U +X compinit && compinit
 
 # Add `~/bin` to the `$PATH`
-export PATH="/Users/lmorrow/.volta/bin:$HOME/bin:/Users/lmorrow/Library/Python/3.9/bin:$PATH"
+export PATH="$HOME/bin:$PATH"
 
 # Homebrew: Set PATH, MANPATH, etc., for Homebrew.
 # eval "$(/opt/homebrew/bin/brew shellenv)" # apple-silicon mac
-# eval "$(/usr/local/bin/brew shellenv)"  # intel mac
+eval "$(/usr/local/bin/brew shellenv)" # intel mac
 
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
@@ -23,10 +23,10 @@ source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 # https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# # NVM
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+# NVM
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 
 # Ngrok shell completions
 if command -v ngrok &>/dev/null; then
@@ -63,6 +63,9 @@ complete -W "NSGlobalDomain" defaults
 
 # Add `killall` tab completion for common apps
 complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari SystemUIServer Terminal Twitter" killall
+
+# Created by `pipx` on 2024-09-05 23:39:51
+export PATH="$PATH:/Users/lacy/.local/bin"
 
 # Deno
 fpath=(~/.zsh $fpath)
