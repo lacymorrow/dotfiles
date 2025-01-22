@@ -6,8 +6,8 @@ time autoload -U +X compinit && compinit
 export PATH="$HOME/bin:$PATH"
 
 # Homebrew: Set PATH, MANPATH, etc., for Homebrew.
-# eval "$(/opt/homebrew/bin/brew shellenv)" # apple-silicon mac
-eval "$(/usr/local/bin/brew shellenv)" # intel mac
+eval "$(/opt/homebrew/bin/brew shellenv)" # apple-silicon mac
+# eval "$(/usr/local/bin/brew shellenv)" # intel mac
 
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
@@ -21,7 +21,26 @@ unset file
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md
+# If you receive "highlighters directory not found" error message,
+# you may need to add the following to your .zshenv:
+#   export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/opt/homebrew/share/zsh-syntax-highlighting/highlighters
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# ZSH completions
+# You may also need to force rebuild `zcompdump`:
+#   rm -f ~/.zcompdump; compinit
+# Additionally, if you receive "zsh compinit: insecure directories" warnings when attempting
+# to load these completions, you may need to run these commands:
+#   chmod go-w '/opt/homebrew/share'
+#   chmod -R go-w '/opt/homebrew/share/zsh'
+
+if type brew &>/dev/null; then
+    FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+
+    autoload -Uz compinit
+	compinit
+fi
+
 
 # NVM
 export NVM_DIR="$HOME/.nvm"

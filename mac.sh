@@ -17,7 +17,7 @@
 dir=~/dotfiles                    # dotfiles directory
 olddir=~/dotfiles_old             # old dotfiles backup directory
 
-bash "$dir/.osx"
+bash "$dir/apply-macos-settings.sh"
 
 bash "$dir/brew.sh"
 
