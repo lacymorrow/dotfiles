@@ -7,7 +7,7 @@ if ! type "brew" > /dev/null; then
 fi
 
 # Install NVM
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 
 # Source it
 export NVM_DIR="$HOME/.nvm"

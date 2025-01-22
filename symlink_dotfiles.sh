@@ -36,7 +36,7 @@ if [ -d "$dir" ]; then
 
     # matches all dotfiles, except . and ..
     for file in "$dir"/home/.[!.]*; do
-        mv  ~/$(basename "$file") $olddir
+        mv  ~/$(basename "$file") $olddir 2> /dev/null
         echo "Creating symlink to $file in home directory."
         ln -s $file ~/$(basename "$file")
     done
