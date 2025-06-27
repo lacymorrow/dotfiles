@@ -194,6 +194,7 @@
 
 	# Include summaries of merged commits in newly created merge commit messages
 	log = true
+	conflictstyle = diff3
 
 [pull]
 	# hint: Pulling without specifying how to reconcile divergent branches is
@@ -203,7 +204,7 @@
 	# hint:   git config pull.rebase false  # merge (the default strategy)
 	# hint:   git config pull.rebase true   # rebase
 	# hint:   git config pull.ff only       # fast-forward only
-	rebase = false
+	rebase = true
 [push]
 
 	# https://git-scm.com/docs/git-config#git-config-pushdefault
