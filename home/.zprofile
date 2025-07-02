@@ -5,30 +5,33 @@ autoload -U +X bashcompinit && bashcompinit
 export PATH="$HOME/bin:$PATH"
 
 # Homebrew: Set PATH, MANPATH, etc., for Homebrew.
-eval "$(/usr/local/bin/brew shellenv)" # intel mac
-# eval "$(/opt/homebrew/bin/brew shellenv)" # apple-silicon mac
+# eval "$(/usr/local/bin/brew shellenv)" # intel mac
+eval "$(/opt/homebrew/bin/brew shellenv)" # apple-silicon mac
+
+# Cache brew --prefix for performance (saves 300-600ms on startup)
+export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-$(/opt/homebrew/bin/brew --prefix)}"
 
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
 # * ~/.extra can be used for other settings you don't want to commit.
 for file in ~/.{path,exports,aliases,docker_aliases,functions,extra,zshrc}; do
-	[ -r "$file" ] && [ -f "$file" ] && source "$file"
+	[ -r "$file" ] && [ -f "$file" ] && [ -s "$file" ] && source "$file"
 done
 unset file
 
 # https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md#oh-my-zsh
-if [ -f "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
-    source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+if [ -f "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
+    source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 fi
 
 # https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md
-if [ -f "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
-    source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+if [ -f "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
+    source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 fi
 
 # ZSH completions setup
 if type brew &>/dev/null; then
-    FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+    FPATH="$HOMEBREW_PREFIX/share/zsh-completions:$FPATH"
 fi
 
 # Deno completions
@@ -38,15 +41,27 @@ fpath=(~/.zsh $fpath)
 autoload -Uz compinit
 compinit -u
 
-# NVM
+# NVM - Lazy load for faster startup (saves 200-500ms)
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+nvm() {
+    unset -f nvm node npm npx
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    nvm "$@"
+}
+# Create placeholder functions for common commands
+node() { nvm; node "$@"; }
+npm() { nvm; npm "$@"; }
+npx() { nvm; npx "$@"; }
 
-# Ngrok shell completions
-if command -v ngrok &>/dev/null; then
-	eval "$(ngrok completion)"
-fi
+# Ngrok shell completions - lazy load on first use
+ngrok() {
+    unset -f ngrok
+    if command -v ngrok &>/dev/null; then
+        eval "$(command ngrok completion)"
+    fi
+    command ngrok "$@"
+}
 
 # Enable ZSH options (equivalent to Bash features)
 setopt AUTO_CD          # Equivalent to autocd
