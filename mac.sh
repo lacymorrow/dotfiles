@@ -42,8 +42,10 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 # Manual URL Installs                                                         #
 ###############################################################################
 
+# Open URLs in parallel for faster execution
 for app in "https://symless.com/synergy" \
 	"https://cursor.sh" \
 	"https://www.privateinternetaccess.com"; do
-	open "${app}"
+	open "${app}" &
 done
+wait

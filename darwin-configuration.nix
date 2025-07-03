@@ -10,26 +10,17 @@
     iterm2
     docker
     coreutils
-    ffmpeg
     nvm
-    yarn
     pnpm
     eslint
     npm-check-updates
-    imagemagick
-    wget
     zsh
-    bat
     glib
-    mas
-    rpm
-    snapcraft
-    trash
-    wine
-    zlib
     zsh-autosuggestions
     zsh-completions
     zsh-syntax-highlighting
+    curl
+    # Packages moved to Brewfile: ffmpeg, imagemagick, wget, bat, mas, rpm, snapcraft, trash, wine, zlib
     # Add more packages as needed
   ];
 
@@ -46,36 +37,19 @@
 
   homebrew.enable = true;
   homebrew.casks = [
-    "visual-studio-code"
     "font-fira-code"
     "dash"
-    "angry-ip-scanner"
     "flycut"
-    "cyberduck"
-    "google-chrome"
-    "gimp"
-    "inkscape"
-    "ngrok"
-    "postman"
-    "slack"
-    "spectacle"
-    "spotify"
-    "transmission"
     "ultimaker-cura"
-    "unetbootin"
-    "vagrant"
-    "virtualbox"
     "vmware-fusion"
-    "xquartz"
     "warp"
-    "zoom"
+    # Casks moved to Brewfile for consistency: visual-studio-code, angry-ip-scanner, cyberduck, google-chrome, gimp, inkscape, ngrok, postman, slack, spotify, transmission, unetbootin, vagrant, virtualbox, xquartz, zoom
     # Add more casks as needed
   ];
 
   mas.enable = true;
   mas.apps = [
-    { name = "Amphetamine"; id = 937984704; }
-    { name = "BetterSnapTool"; id = 417375580; }
+    # Mac App Store apps moved to Brewfile for consistency
     # Add more apps as needed
   ];
 

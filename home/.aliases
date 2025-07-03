@@ -1,6 +1,6 @@
 # IDE Aliases
-alias c="code"
 alias c="cursor"
+alias code="code"
 
 # Aliases
 alias prettyjson='python -m json.tool'
@@ -10,9 +10,9 @@ alias speedtest='curl -o /dev/null http://speedtest.wdc01.softlayer.com/download
 alias reload='source ~/.zshrc'
 alias placonaup='docker-compose up nginx-proxy placona jekyll'
 alias cat="bat"
-alias p="cd ~/Projects/"
+alias proj="cd ~/Projects/"
 alias d="cd ~/Downloads/"
-alias ls="ls -lSrhat"
+alias lsl="ls -lSrhat"
 alias ip="echo Your ip is; dig +short myip.opendns.com @resolver1.opendns.com;"
 alias du="du -sh * | sort -h"
 alias ll="ls -FGlAhp"
@@ -38,8 +38,8 @@ alias g="git"
 alias h="history"
 alias j="jobs"
 
-# Git Status
-alias gs="git status && git add . && git commit -am 'auto commit' && git pushup"
+# Git Status - optimized single command
+alias gs="git add . && git commit -am 'auto commit' && git push"
 # Prevent some autocorrections
 alias dir="nocorrect dir"
 # For NPM meteor-electron
