@@ -17,6 +17,11 @@ HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 
+# Additional history options for better behavior
+setopt HIST_FIND_NO_DUPS    # Don't show duplicates when searching history
+setopt HIST_EXPIRE_DUPS_FIRST # Delete duplicates first when HISTFILE fills up
+setopt EXTENDED_HISTORY      # Write timestamp to history
+
 # Enable advanced completions
 autoload -Uz compinit
 compinit -u
@@ -47,3 +52,26 @@ bindkey "^[3;5~" kill-word          # Ctrl+Delete
 
 # Initialize Starship prompt
 eval "$(starship init zsh)"
+
+# History search key bindings
+# Up/Down arrows for history search based on current input
+bindkey '^[[A' history-beginning-search-backward  # Up arrow
+bindkey '^[[B' history-beginning-search-forward   # Down arrow
+bindkey '^P' history-beginning-search-backward    # Ctrl+P (alternative)
+bindkey '^N' history-beginning-search-forward     # Ctrl+N (alternative)
+
+# Ensure consistent PATH for all tools
+# Bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# NVM and Node.js tools
+export NVM_DIR="$HOME/.nvm"
+# Add current NVM node to PATH if available
+if [ -d "$NVM_DIR/versions/node" ]; then
+    # Find the default or current node version
+    NODE_VERSION=$(ls -1 "$NVM_DIR/versions/node" | tail -n1)
+    if [ -n "$NODE_VERSION" ]; then
+        export PATH="$NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH"
+    fi
+fi
