@@ -7,6 +7,33 @@ timezsh() {
   for i in $(seq 1 10); do /usr/bin/time $shell -i -c exit; done
 }
 
+# Battery level gauge for Oh My Zsh theme
+battery_level_gauge() {
+  if command -v pmset &>/dev/null; then
+    local battery_level=$(pmset -g batt | grep -Eo "\d+%" | cut -d% -f1)
+    if [[ -n "$battery_level" ]]; then
+      if [[ $battery_level -ge 80 ]]; then
+        echo "🔋"
+      elif [[ $battery_level -ge 60 ]]; then
+        echo "🔋"
+      elif [[ $battery_level -ge 40 ]]; then
+        echo "🪫"
+      elif [[ $battery_level -ge 20 ]]; then
+        echo "🪫"
+      else
+        echo "🪫"
+      fi
+    fi
+  fi
+}
+
+# Simple battery percentage
+battery_pct_prompt() {
+  if command -v pmset &>/dev/null; then
+    pmset -g batt | grep -Eo "\d+%" || echo ""
+  fi
+}
+
 # Create a new directory and enter it
 function mkd() {
 	mkdir -p "$@" && cd "$_";

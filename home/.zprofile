@@ -5,11 +5,11 @@ autoload -U +X bashcompinit && bashcompinit
 export PATH="$HOME/bin:$PATH"
 
 # Homebrew: Set PATH, MANPATH, etc., for Homebrew.
-# eval "$(/usr/local/bin/brew shellenv)" # intel mac
-eval "$(/opt/homebrew/bin/brew shellenv)" # apple-silicon mac
+eval "$(/usr/local/bin/brew shellenv)" # intel mac
+# eval "$(/opt/homebrew/bin/brew shellenv)" # apple-silicon mac
 
 # Cache brew --prefix for performance (saves 300-600ms on startup)
-export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-$(/opt/homebrew/bin/brew --prefix)}"
+export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-$(/usr/local/bin/brew --prefix)}"
 
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
