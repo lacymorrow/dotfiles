@@ -16,6 +16,7 @@
     pnpm
     eslint
     npm-check-updates
+    bun
     imagemagick
     wget
     zsh
