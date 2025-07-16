@@ -1,196 +1,49 @@
-#!/usr/bin/env zsh
-# Optimized .zshrc configuration
-
-# Performance: Skip the global compinit, we'll do it ourselves
-skip_global_compinit=1
-
-# Add ~/bin to PATH if not already present
-[[ ":$PATH:" != *":$HOME/bin:"* ]] && export PATH="$HOME/bin:$PATH"
-
-# Cache brew prefix for performance
-if command -v brew &>/dev/null; then
-    if [[ -f "$HOME/.brew_prefix" ]]; then
-        export BREW_PREFIX="$(<"$HOME/.brew_prefix")"
-    else
-        export BREW_PREFIX="$(brew --prefix)"
-        echo "$BREW_PREFIX" > "$HOME/.brew_prefix"
-    fi
-    
-    # Set PATH for Homebrew
-    export PATH="$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$PATH"
-fi
-
-# Source basic configuration files first
-typeset -U config_files
-config_files=(
-    ~/.path
-    ~/.exports
-    ~/.history_settings
-)
-
-for file in ${config_files[@]}; do
-    [[ -r "$file" ]] && [[ -f "$file" ]] && source "$file"
-done
-unset config_files
-
-# Oh My Zsh Configuration (if installed)
-if [[ -d "$HOME/.oh-my-zsh" ]]; then
-    export ZSH="$HOME/.oh-my-zsh"
-    
-    # Install custom uber theme if it exists
-    if [[ -f "$HOME/dotfiles/uber.zsh-theme" ]] && [[ ! -f "$ZSH/custom/themes/uber.zsh-theme" ]]; then
-        mkdir -p "$ZSH/custom/themes"
-        cp "$HOME/dotfiles/uber.zsh-theme" "$ZSH/custom/themes/"
-    fi
-    
-    # Use custom theme if available, fallback to robbyrussell
-    if [[ -f "$ZSH/custom/themes/uber.zsh-theme" ]]; then
-        ZSH_THEME="uber"
-    else
-        ZSH_THEME="robbyrussell"
-    fi
-    
-    # Performance optimizations
-    DISABLE_AUTO_UPDATE="true"
-    DISABLE_UPDATE_PROMPT="true"
-    
-    # Load Oh My Zsh
-    source "$ZSH/oh-my-zsh.sh"
-fi
-
-# Source custom overrides AFTER Oh My Zsh
-typeset -U override_files
-override_files=(
-    ~/.aliases
-    ~/.docker_aliases
-    ~/.functions
-    ~/.extra
-)
-
-for file in ${override_files[@]}; do
-    if [[ -r "$file" ]] && [[ -f "$file" ]]; then
-        source "$file"
-    fi
-done
-unset override_files
-
-# ZSH-specific options
-setopt AUTO_CD              # cd by typing directory name
-setopt GLOB_STAR_SHORT      # ** for recursive globbing
-setopt HIST_IGNORE_ALL_DUPS # Remove older duplicate entries from history
-setopt HIST_REDUCE_BLANKS   # Remove blanks from history
+# ZSH Configuration - Essential options for modern shell experience
+setopt AUTO_CD              # Change to directory just by typing directory name
+setopt GLOB_STAR_SHORT      # Enable ** for recursive globbing
+setopt HIST_VERIFY          # Show expanded history command before executing
 setopt SHARE_HISTORY        # Share history between sessions
-setopt EXTENDED_HISTORY     # Save timestamp in history
+setopt APPEND_HISTORY       # Append to history file
+setopt INC_APPEND_HISTORY   # Add commands to history immediately
+setopt HIST_IGNORE_DUPS     # Don't record duplicate commands
+setopt HIST_IGNORE_SPACE    # Don't record commands starting with space
+setopt HIST_REDUCE_BLANKS   # Remove extra blanks from commands
+setopt CORRECT              # Enable command correction
+setopt COMPLETE_IN_WORD     # Complete from both ends of word
+setopt ALWAYS_TO_END        # Move cursor to end after completion
 
 # History configuration
-HISTSIZE=32768
-HISTFILE="$HOME/.zsh_history"
-SAVEHIST=$HISTSIZE
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
 
-# Lazy load NVM for better performance
-if [[ -d "$HOME/.nvm" ]]; then
-    export NVM_DIR="$HOME/.nvm"
-    # Lazy load nvm
-    nvm() {
-        unfunction nvm
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-        nvm "$@"
-    }
-    
-    # Load node from .nvmrc if it exists
-    load-nvmrc() {
-        # Ensure nvm is fully loaded first
-        if ! command -v nvm_find_nvmrc &>/dev/null; then
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        fi
-        
-        local node_version="$(nvm version)"
-        local nvmrc_path="$(nvm_find_nvmrc)"
-        
-        if [ -n "$nvmrc_path" ]; then
-            local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
-            
-            if [ "$nvmrc_node_version" = "N/A" ]; then
-                nvm install
-            elif [ "$nvmrc_node_version" != "$node_version" ]; then
-                nvm use
-            fi
-        elif [ "$node_version" != "$(nvm version default)" ]; then
-            echo "Reverting to nvm default version"
-            nvm use default
-        fi
-    }
-    
-    # Only load if we need it
-    if [[ -f ".nvmrc" ]]; then
-        load-nvmrc
-    fi
-fi
-
-# Load Homebrew completions and plugins efficiently
-if [[ -n "$BREW_PREFIX" ]]; then
-    # Completions
-    FPATH="$BREW_PREFIX/share/zsh/site-functions:$BREW_PREFIX/share/zsh-completions:$FPATH"
-    
-    # Autosuggestions
-    [[ -f "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
-        source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-    
-    # Syntax highlighting (load last)
-    [[ -f "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && \
-        source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-fi
-
-# Deno completions
-[[ -d "$HOME/.zsh" ]] && fpath=("$HOME/.zsh" $fpath)
-
-# Initialize completions (do this once after setting up FPATH)
+# Enable advanced completions
 autoload -Uz compinit
-# Check if dump exists and is less than 24 hours old
-if [[ -f "$HOME/.zcompdump" ]]; then
-    if [[ $(find "$HOME/.zcompdump" -mtime +1 -print) ]]; then
-        compinit
-    else
-        compinit -C
-    fi
-else
-    compinit
+compinit -u
+
+# Git completion for 'g' alias (if it exists)
+if type git &>/dev/null && [ -f ~/.aliases ]; then
+    compdef g=git 2>/dev/null
 fi
 
-# Load bash completion compatibility
-autoload -U +X bashcompinit && bashcompinit
+# Key bindings for word navigation and deletion
+# Use emacs-style key bindings
+bindkey -e
 
-# Completion settings
-zstyle ':completion:*' menu select
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+# Word navigation (Option+Arrow keys)
+bindkey "^[OC" forward-word         # Option+Right Arrow
+bindkey "^[OD" backward-word        # Option+Left Arrow
+bindkey "^[[1;5C" forward-word      # Ctrl+Right Arrow
+bindkey "^[[1;5D" backward-word     # Ctrl+Left Arrow
 
-# SSH completion from config
-if [[ -e "$HOME/.ssh/config" ]]; then
-    zstyle ':completion:*:ssh:*' hosts $(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')
-    zstyle ':completion:*:scp:*' hosts $(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')
-fi
+# Word deletion
+bindkey "^[^?" backward-kill-word   # Option+Backspace
+bindkey "^W" backward-kill-word     # Ctrl+W (alternative)
+bindkey "^[d" kill-word             # Option+Delete
 
-# Git completions
-[[ -f "$HOME/.git_completions" ]] && source "$HOME/.git_completions"
+# Fix for different terminal emulators
+bindkey "^[[3~" delete-char         # Delete key
+bindkey "^[3;5~" kill-word          # Ctrl+Delete
 
-# Lazy load heavy completions
-if command -v ngrok &>/dev/null; then
-    ngrok() {
-        unfunction ngrok
-        eval "$(command ngrok completion)"
-        ngrok "$@"
-    }
-fi
-
-# pipx PATH (if it exists)
-[[ -d "$HOME/.local/bin" ]] && export PATH="$PATH:$HOME/.local/bin"
-
-# Local zsh config
-[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
-
-# Ensure aliases are always loaded (fallback)
-if ! alias gs &>/dev/null; then
-    [[ -f "$HOME/.aliases" ]] && source "$HOME/.aliases"
-fi
+# Initialize Starship prompt
+eval "$(starship init zsh)"
