@@ -37,8 +37,11 @@ alias g="git"
 alias h="history"
 alias j="jobs"
 
-# Git Status
-alias gs="git status && git add . && git commit -am 'auto commit' && git pushup"
+# Git shortcuts
+alias gs="git status"
+alias gpa="git status && git add . && git commit -am 'auto commit' && git pushup"
+alias gpp="git pull && git pushup"
+
 # Prevent some autocorrections
 alias dir="nocorrect dir"
 # For NPM meteor-electron
