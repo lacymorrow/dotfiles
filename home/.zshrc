@@ -100,6 +100,11 @@ if [[ -d "$HOME/.nvm" ]]; then
     
     # Load node from .nvmrc if it exists
     load-nvmrc() {
+        # Ensure nvm is fully loaded first
+        if ! command -v nvm_find_nvmrc &>/dev/null; then
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        fi
+        
         local node_version="$(nvm version)"
         local nvmrc_path="$(nvm_find_nvmrc)"
         
