@@ -14,7 +14,7 @@ export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-$(/usr/local/bin/brew --prefix)}"
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
 # * ~/.extra can be used for other settings you don't want to commit.
-for file in ~/.{path,exports,aliases,docker_aliases,functions,extra,zshrc}; do
+for file in ~/.{path,exports,aliases,docker_aliases,functions,extra}; do
 	[ -r "$file" ] && [ -f "$file" ] && [ -s "$file" ] && source "$file"
 done
 unset file
@@ -41,18 +41,10 @@ fpath=(~/.zsh $fpath)
 autoload -Uz compinit
 compinit -u
 
-# NVM - Lazy load for faster startup (saves 200-500ms)
+# NVM - Load directly for immediate Node.js tool availability
 export NVM_DIR="$HOME/.nvm"
-nvm() {
-    unset -f nvm node npm npx
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-    nvm "$@"
-}
-# Create placeholder functions for common commands
-node() { nvm; node "$@"; }
-npm() { nvm; npm "$@"; }
-npx() { nvm; npx "$@"; }
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Ngrok shell completions - lazy load on first use
 ngrok() {
@@ -77,4 +69,4 @@ if type git &>/dev/null && [ -f ~/.aliases ]; then
 fi
 
 # Created by `pipx` on 2024-09-05 23:39:51
-export PATH="$PATH:/Users/lacy/.local/bin"
+export PATH="$PATH:$HOME/.local/bin"
