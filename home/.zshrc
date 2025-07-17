@@ -64,14 +64,3 @@ bindkey '^N' history-beginning-search-forward     # Ctrl+N (alternative)
 # Bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-
-# NVM and Node.js tools
-export NVM_DIR="$HOME/.nvm"
-# Add current NVM node to PATH if available
-if [ -d "$NVM_DIR/versions/node" ]; then
-    # Find the default or current node version
-    NODE_VERSION=$(ls -1 "$NVM_DIR/versions/node" | tail -n1)
-    if [ -n "$NODE_VERSION" ]; then
-        export PATH="$NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH"
-    fi
-fi
