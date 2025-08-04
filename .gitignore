@@ -85,5 +85,8 @@ Thumbs.db
 # dotenv environment variables file
 .env
 
+# npm configuration
+home/.npmrc
+
 # next.js build output
 .next
