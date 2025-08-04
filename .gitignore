@@ -86,7 +86,7 @@ Thumbs.db
 .env
 
 # npm configuration
-home/.npmrc
+# home/.npmrc
 
 # next.js build output
 .next
