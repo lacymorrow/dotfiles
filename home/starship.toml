@@ -1,0 +1,89 @@
+# Starship Configuration
+# https://starship.rs/config/
+
+# Global timeout for all modules (increase from default 500ms)
+command_timeout = 2000
+
+# Prompt format
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$nodejs\
+$python\
+$docker_context\
+$jobs\
+$cmd_duration\
+$line_break\
+$character"""
+
+# Username
+[username]
+style_user = "green bold"
+style_root = "red bold"
+format = "[$user]($style) "
+disabled = false
+show_always = true
+
+# Hostname
+[hostname]
+ssh_only = false
+format = "on [$hostname](bold yellow) "
+disabled = false
+
+# Directory
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+style = "bold cyan"
+
+# Git branch
+[git_branch]
+symbol = "🌱 "
+format = "on [$symbol$branch]($style) "
+style = "bold purple"
+
+# Git status
+[git_status]
+format = '([\[$all_status$ahead_behind\]]($style) )'
+style = "bold red"
+
+# Node.js - Optimized to reduce timeout issues
+[nodejs]
+format = "via [⬢ $version](bold green) "
+detect_extensions = ["js", "mjs", "cjs", "ts", "tsx", "json"]
+detect_files = ["package.json", ".node-version", ".nvmrc"]
+detect_folders = ["node_modules"]
+# Use faster detection method
+style = "bold green"
+disabled = false
+
+# Python
+[python]
+format = "via [🐍 $version]($style) "
+style = "bold yellow"
+
+# Docker context
+[docker_context]
+format = "via [🐳 $context](blue bold) "
+
+# Jobs
+[jobs]
+format = "[$symbol$number]($style) "
+style = "bold blue"
+symbol = "✦"
+threshold = 1
+
+# Command duration
+[cmd_duration]
+format = "took [$duration]($style) "
+style = "bold yellow"
+min_time = 2000
+
+# Character
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[➜](bold red)"

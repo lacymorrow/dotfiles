@@ -64,3 +64,4 @@ bindkey '^N' history-beginning-search-forward     # Ctrl+N (alternative)
 # Bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+alias claude="/Users/lacymorrow/.claude/local/claude"
