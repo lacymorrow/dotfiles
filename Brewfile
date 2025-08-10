@@ -1,7 +1,6 @@
 tap "buo/cask-upgrade"
 # CLI tools
 brew "bat"
-brew "bun"
 brew "ffmpeg"
 brew "glib"
 brew "imagemagick"
@@ -20,22 +19,24 @@ brew "zsh-syntax-highlighting"
 # Cask apps
 cask "visual-studio-code"
 cask "angry-ip-scanner"
-cask "docker"
+cask "cursor"
 cask "cyberduck"
+cask "docker"
 cask "firefox"
 cask "ghostty"
 cask "google-chrome"
 cask "gimp"
-cask "inkscape"
+# cask "inkscape"
 cask "ngrok"
-cask "postman"
+# cask "postman"
 cask "slack"
 cask "spotify"
 cask "transmission"
 cask "unetbootin"
-cask "vagrant"
+# cask "vagrant"
 cask "vlc"
 cask "virtualbox"
+cask "warp"
 cask "xquartz"
 cask "zed"
 cask "zoom"
@@ -55,5 +56,5 @@ cask "qlvideo"
 
 # Mac App Store apps
 mas "Amphetamine", id: 937984704
-mas "BetterSnapTool", id: 417375580
+# mas "BetterSnapTool", id: 417375580
 mas "Flycut", id: 442160987
