@@ -12,6 +12,8 @@
 # - Install node packages (depends on node)
 ############################
 
+dir=~/dotfiles                    # dotfiles directory
+
 bash "$dir/apply-macos-settings.sh"
 
 bash "$dir/brew.sh"
