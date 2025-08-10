@@ -26,7 +26,7 @@ bash "$dir/node.sh"
 bash "$dir/symlink_dotfiles.sh"
 
 # Install oh my zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+# sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 
 ###############################################################################
@@ -43,7 +43,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 ###############################################################################
 
 for app in "https://symless.com/synergy" \
-	"https://cursor.sh" \
+#	"https://cursor.sh" \
 	"https://www.privateinternetaccess.com"; do
 	open "${app}"
 done
