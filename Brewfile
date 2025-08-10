@@ -1,6 +1,7 @@
 tap "buo/cask-upgrade"
 # CLI tools
 brew "bat"
+brew "oven-sh/bun/bun"
 brew "ffmpeg"
 brew "glib"
 brew "imagemagick"
