@@ -59,10 +59,10 @@ sudo defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool tr
 
 # Set computer name (as done via System Preferences → Sharing)
 
-sudo scutil --set ComputerName "Graphite"
-sudo scutil --set HostName "Graphite"
-sudo scutil --set LocalHostName "Graphite"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "Graphite"
+sudo scutil --set ComputerName "Zero"
+sudo scutil --set HostName "Zero"
+sudo scutil --set LocalHostName "Zero"
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "Zero"
 
 # Set sidebar icon size to medium
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 1
