@@ -19,6 +19,7 @@ nvm install node
 
 # Install NPM global packages
 for app in "yarn" \
+	"bun" \
 	"pnpm" \
 	"eslint" \
 	"npm-check-updates" \
