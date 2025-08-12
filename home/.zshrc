@@ -63,7 +63,7 @@ bindkey '^N' history-beginning-search-forward     # Ctrl+N (alternative)
 # Ensure consistent PATH for all tools
 # Bun
 export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:~/go/bin:$HOME/.local/bin:$PATH"
+export PATH="$BUN_INSTALL/bin:$HOME/go/bin:$HOME/.local/bin:$PATH"
 
 alias claude="/Users/lacymorrow/.claude/local/claude"
 
