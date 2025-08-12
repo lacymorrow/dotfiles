@@ -5,8 +5,8 @@ autoload -U +X bashcompinit && bashcompinit
 export PATH="$HOME/bin:$PATH"
 
 # Homebrew: Set PATH, MANPATH, etc., for Homebrew.
-eval "$(/usr/local/bin/brew shellenv)" # intel mac
-# eval "$(/opt/homebrew/bin/brew shellenv)" # apple-silicon mac
+# eval "$(/usr/local/bin/brew shellenv)" # intel mac
+eval "$(/opt/homebrew/bin/brew shellenv)" # apple-silicon mac
 
 # Cache brew --prefix for performance (saves 300-600ms on startup)
 export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-$(/usr/local/bin/brew --prefix)}"
@@ -67,6 +67,3 @@ setopt GLOB_STAR_SHORT  # Equivalent to globstar
 if type git &>/dev/null && [ -f ~/.aliases ]; then
     compdef g=git 2>/dev/null
 fi
-
-# Created by `pipx` on 2024-09-05 23:39:51
-export PATH="$PATH:$HOME/.local/bin"

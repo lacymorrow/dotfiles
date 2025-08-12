@@ -63,5 +63,11 @@ bindkey '^N' history-beginning-search-forward     # Ctrl+N (alternative)
 # Ensure consistent PATH for all tools
 # Bun
 export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+export PATH="$BUN_INSTALL/bin:~/go/bin:$HOME/.local/bin:$PATH"
 alias claude="/Users/lacymorrow/.claude/local/claude"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+. "$HOME/.cargo/env"            # For sh/bash/zsh/ash/dash/pdksh

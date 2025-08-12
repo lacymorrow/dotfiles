@@ -39,8 +39,38 @@ bash "$dir/symlink_dotfiles.sh"
 # Manual URL Installs                                                         #
 ###############################################################################
 
-for app in "https://symless.com/synergy" \
 #	"https://cursor.sh" \
+for app in "https://symless.com/synergy" \
 	"https://www.privateinternetaccess.com"; do
 	open "${app}"
 done
+
+sleep 30
+
+echo "Waiting for 30 seconds to let the apps install..."
+
+###############################################################################
+# Kill affected applications                                                  #
+###############################################################################
+
+for app in "Activity Monitor" \
+	"Address Book" \
+	"Calendar" \
+	"cfprefsd" \
+	"Contacts" \
+	"Dock" \
+	"Finder" \
+	"Google Chrome Canary" \
+	"Google Chrome" \
+	"Messages" \
+	"Photos" \
+	"Safari" \
+	"Spectacle" \
+	"SystemUIServer" \
+	"Terminal" \
+	"Transmission"; do
+	killall "${app}" &>/dev/null
+done
+
+read -p "Press Enter to restart the computer..."
+sudo shutdown -r now
