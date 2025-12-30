@@ -47,6 +47,12 @@ function parse_git_branch() {
 	git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/\1$(parse_git_dirty)/"
 }
 
+# Quick git add, commit, and push. Optional commit message argument.
+# Usage: gg or gg "your commit message"
+gg() {
+	git status && git add . && git commit -am "${1:-auto commit}" && git pushup
+}
+
 # Only show username/host if not default
 function usernamehost() {
     if [ $USER != $default_username ]; then echo "${MAGENTA}$USER ${WHITE}at ${ORANGE}$HOSTNAME $WHITEin "; fi

@@ -22,13 +22,37 @@ setopt HIST_FIND_NO_DUPS    # Don't show duplicates when searching history
 setopt HIST_EXPIRE_DUPS_FIRST # Delete duplicates first when HISTFILE fills up
 setopt EXTENDED_HISTORY      # Write timestamp to history
 
+# Ensure consistent PATH for all tools
+# Bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$HOME/go/bin:$HOME/.local/bin:$PATH"
+    
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+. "$HOME/.cargo/env"            # For sh/bash/zsh/ash/dash/pdksh
+
+# Added by Windsurf
+export PATH="/Users/lacy/.codeium/windsurf/bin:$PATH"
+
+
+# lash
+export PATH=/Users/lacy/.lash/bin:$PATH
+
+# Interactive-only configuration
+# `opencode` shell mode runs `zsh -c` and sources this file; skip UI/prompt setup there.
+if [[ ! -o interactive ]]; then
+  return
+fi
+
 # Enable advanced completions
 autoload -Uz compinit
 compinit -u
 
 # Git completion for 'g' alias (if it exists)
 if type git &>/dev/null && [ -f ~/.aliases ]; then
-    compdef g=git 2>/dev/null
+  compdef g=git 2>/dev/null
 fi
 
 # Key bindings for word navigation and deletion
@@ -63,12 +87,11 @@ bindkey '^N' history-beginning-search-forward     # Ctrl+N (alternative)
 # Ensure consistent PATH for all tools
 # Bun
 export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$HOME/go/bin:$HOME/.local/bin:$PATH"
+export PATH="$BUN_INSTALL/bin:~/go/bin:$HOME/.local/bin:$PATH"
 
-alias claude="/Users/lacymorrow/.claude/local/claude"
+# Added by Antigravity
+export PATH="/Users/lacy/.antigravity/antigravity/bin:$PATH"
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# bun completions
+[ -s "/Users/lacy/.bun/_bun" ] && source "/Users/lacy/.bun/_bun"
 
-. "$HOME/.cargo/env"            # For sh/bash/zsh/ash/dash/pdksh

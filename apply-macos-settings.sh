@@ -163,6 +163,11 @@ defaults write NSGlobalDomain NSqAutomaticSpellingCorrectionEnabled -bool false
 # Enable 3 finger gestures
 defaults -currentHost write NSGlobalDomain com.apple.trackpad.threeFingerSwipeGesture -int 1
 
+# Disable two-finger from right edge swipe for Notification Center
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.twoFingerFromRightEdgeSwipeGesture -int 0
+defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerFromRightEdgeSwipeGesture -int 0
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadTwoFingerFromRightEdgeSwipeGesture -int 0
+
 # Enable Dictation
 # https://sudoai.dev/
 defaults write com.apple.speech.recognition.AppleSpeechRecognition.prefs DictationIMMasterSwitchOff -bool false

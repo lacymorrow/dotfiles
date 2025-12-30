@@ -39,7 +39,6 @@ alias j="jobs"
 
 # Git shortcuts
 alias gs="git status"
-alias gg="git status && git add . && git commit -am 'auto commit' && git pushup"
 alias gp="git pushup"
 alias gpp="git pull && git pushup"
 
