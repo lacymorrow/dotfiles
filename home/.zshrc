@@ -22,10 +22,7 @@ setopt HIST_FIND_NO_DUPS    # Don't show duplicates when searching history
 setopt HIST_EXPIRE_DUPS_FIRST # Delete duplicates first when HISTFILE fills up
 setopt EXTENDED_HISTORY      # Write timestamp to history
 
-# Enable advanced completions
-autoload -Uz compinit
-compinit -u
-
+# Completions are initialized in .zprofile - just set up git alias completion
 # Git completion for 'g' alias (if it exists)
 if type git &>/dev/null && [ -f ~/.aliases ]; then
     compdef g=git 2>/dev/null
@@ -65,10 +62,7 @@ bindkey '^N' history-beginning-search-forward     # Ctrl+N (alternative)
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$HOME/go/bin:$HOME/.local/bin:$PATH"
 
-alias claude="/Users/lacymorrow/.claude/local/claude"
+# NVM is loaded in .zprofile - removed duplicate here
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-. "$HOME/.cargo/env"            # For sh/bash/zsh/ash/dash/pdksh
+# Cargo env (only if installed)
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"

@@ -7,8 +7,8 @@
 
 ########## Variables
 
-dir=~/dotfiles                    # dotfiles directory
-olddir=~/dotfiles_old             # old dotfiles backup directory
+dir="${DIR:-$HOME/dotfiles}"                    # dotfiles directory
+olddir="${OLDDIR:-$HOME/dotfiles_old}"             # old dotfiles backup directory
 
 ##########
 
