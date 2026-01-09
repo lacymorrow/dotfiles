@@ -22,10 +22,38 @@ setopt HIST_FIND_NO_DUPS    # Don't show duplicates when searching history
 setopt HIST_EXPIRE_DUPS_FIRST # Delete duplicates first when HISTFILE fills up
 setopt EXTENDED_HISTORY      # Write timestamp to history
 
+# Ensure consistent PATH for all tools
+# Bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$HOME/go/bin:$HOME/.local/bin:$PATH"
+
+# Added by Windsurf
+export PATH="/Users/lacy/.codeium/windsurf/bin:$PATH"
+
+# lash
+export PATH=/Users/lacy/.lash/bin:$PATH
+
+# Added by Antigravity
+export PATH="/Users/lacy/.antigravity/antigravity/bin:$PATH"
+
+# NVM is loaded lazily in .zprofile for fast startup
+
+# Cargo env (only if installed)
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+# bun completions
+[ -s "/Users/lacy/.bun/_bun" ] && source "/Users/lacy/.bun/_bun"
+
+# Interactive-only configuration
+# `opencode` shell mode runs `zsh -c` and sources this file; skip UI/prompt setup there.
+if [[ ! -o interactive ]]; then
+  return
+fi
+
 # Completions are initialized in .zprofile - just set up git alias completion
 # Git completion for 'g' alias (if it exists)
 if type git &>/dev/null && [ -f ~/.aliases ]; then
-    compdef g=git 2>/dev/null
+  compdef g=git 2>/dev/null
 fi
 
 # Key bindings for word navigation and deletion
@@ -56,13 +84,3 @@ bindkey '^[[A' history-beginning-search-backward  # Up arrow
 bindkey '^[[B' history-beginning-search-forward   # Down arrow
 bindkey '^P' history-beginning-search-backward    # Ctrl+P (alternative)
 bindkey '^N' history-beginning-search-forward     # Ctrl+N (alternative)
-
-# Ensure consistent PATH for all tools
-# Bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$HOME/go/bin:$HOME/.local/bin:$PATH"
-
-# NVM is loaded in .zprofile - removed duplicate here
-
-# Cargo env (only if installed)
-[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
