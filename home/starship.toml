@@ -2,7 +2,7 @@
 # https://starship.rs/config/
 
 # Global timeout for all modules (increase from default 500ms)
-command_timeout = 2000
+command_timeout = 4000
 
 # Prompt format
 format = """
