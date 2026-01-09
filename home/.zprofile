@@ -51,21 +51,32 @@ else
     compinit -C -u  # Use cached completions
 fi
 
-# NVM - Lazy load for fast shell startup (saves ~500ms)
+# NVM setup
 export NVM_DIR="$HOME/.nvm"
 if [ -s "$NVM_DIR/nvm.sh" ]; then
-    # Lazy load nvm, node, npm, npx, yarn, pnpm
-    __load_nvm() {
-        unset -f nvm node npm npx yarn pnpm __load_nvm
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-    }
-    nvm() { __load_nvm && nvm "$@"; }
-    node() { __load_nvm && node "$@"; }
-    npm() { __load_nvm && npm "$@"; }
-    npx() { __load_nvm && npx "$@"; }
-    yarn() { __load_nvm && yarn "$@"; }
-    pnpm() { __load_nvm && pnpm "$@"; }
+    # Add NVM default node bin to PATH for global npm tools (like claude)
+    if [ -f "$NVM_DIR/alias/default" ]; then
+        __nvm_default_version=$(cat "$NVM_DIR/alias/default")
+        # Resolve version alias to actual version directory
+        if [ -d "$NVM_DIR/versions/node/v$__nvm_default_version" ]; then
+            export PATH="$NVM_DIR/versions/node/v$__nvm_default_version/bin:$PATH"
+        elif [ -d "$NVM_DIR/versions/node/$__nvm_default_version" ]; then
+            export PATH="$NVM_DIR/versions/node/$__nvm_default_version/bin:$PATH"
+        else
+            # Find matching version directory (handles major version aliases like "24" -> "v24.x.x")
+            for __nvm_dir in "$NVM_DIR/versions/node/v$__nvm_default_version"*; do
+                if [ -d "$__nvm_dir" ]; then
+                    export PATH="$__nvm_dir/bin:$PATH"
+                    break
+                fi
+            done
+        fi
+        unset __nvm_default_version __nvm_dir
+    fi
+
+    # Load NVM
+    \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 
 # Ngrok shell completions - lazy load on first use

@@ -36,7 +36,7 @@ export PATH=/Users/lacy/.lash/bin:$PATH
 # Added by Antigravity
 export PATH="/Users/lacy/.antigravity/antigravity/bin:$PATH"
 
-# NVM is loaded lazily in .zprofile for fast startup
+# NVM is loaded in .zprofile
 
 # Cargo env (only if installed)
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
