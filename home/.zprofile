@@ -14,11 +14,7 @@ elif [[ -f "/usr/local/bin/brew" ]]; then
     eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-# Cache brew --prefix for performance (saves 300-600ms on startup)
-# Only set if brew is available and HOMEBREW_PREFIX isn't already set
-if command -v brew &>/dev/null && [[ -z "${HOMEBREW_PREFIX}" ]]; then
-    export HOMEBREW_PREFIX="$(brew --prefix)"
-fi
+# Note: HOMEBREW_PREFIX is already set by brew shellenv above
 
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
@@ -46,14 +42,31 @@ fi
 # Deno completions
 fpath=(~/.zsh $fpath)
 
-# Initialize completions (do this once after setting up FPATH)
+# Initialize completions with caching (rebuild once per day)
+# -u flag ignores insecure directories (group-writable Homebrew dirs)
 autoload -Uz compinit
-compinit -u
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+    compinit -u
+else
+    compinit -C -u  # Use cached completions
+fi
 
-# NVM - Load directly for immediate Node.js tool availability
+# NVM - Lazy load for fast shell startup (saves ~500ms)
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    # Lazy load nvm, node, npm, npx, yarn, pnpm
+    __load_nvm() {
+        unset -f nvm node npm npx yarn pnpm __load_nvm
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    }
+    nvm() { __load_nvm && nvm "$@"; }
+    node() { __load_nvm && node "$@"; }
+    npm() { __load_nvm && npm "$@"; }
+    npx() { __load_nvm && npx "$@"; }
+    yarn() { __load_nvm && yarn "$@"; }
+    pnpm() { __load_nvm && pnpm "$@"; }
+fi
 
 # Ngrok shell completions - lazy load on first use
 ngrok() {
@@ -68,11 +81,6 @@ ngrok() {
 setopt AUTO_CD          # Equivalent to autocd
 setopt GLOB_STAR_SHORT  # Equivalent to globstar
 
-# Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
-[ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh
+# SSH host completion is handled by zsh's built-in _ssh completion
 
-# ZSH-specific completions
-# Enable git completion for 'g' alias (if it exists)
-if type git &>/dev/null && [ -f ~/.aliases ]; then
-    compdef g=git 2>/dev/null
-fi
+# Git alias completion is set up in .zshrc

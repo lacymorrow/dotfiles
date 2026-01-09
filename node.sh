@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
 
-# Brew should be installed
-if ! type "brew" > /dev/null; then
-    echo "Homebrew is not installed. Please install it first."
-	exit 1
-fi
+# # Brew should be installed
+# if ! type "brew" > /dev/null; then
+#     echo "Homebrew is not installed. Please install it first."
+# 	exit 1
+# fi
 
 # Install NVM
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
@@ -26,6 +26,3 @@ for app in "yarn" \
 	; do
 	npm install -g "${app}"
 done
-
-# Enable Yarn Corepack
-corepack enable || echo "Could not enable Yarn Corepack"
