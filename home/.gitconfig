@@ -1,9 +1,6 @@
-[user]
-	name = Lacy Morrow
-	email = me@lacymorrow.com
-
-# [push]
-#   default = simple
+# [user]
+# 	name = Lacy Morrow
+# 	email = me@lacymorrow.com
 
 [alias]
 
@@ -211,6 +208,8 @@
 	default = simple
 	# Make `git push` push relevant annotated tags when pushing branches out.
 	followTags = true
+	# To push the current branch and set the remote as upstream automatically
+	autoSetupRemote = true
 
 # URL shorthands
 
@@ -246,3 +245,6 @@
 
 
 
+[user]
+	email = lmorrow@bizjournals.com
+	name = Lacy Morrow
