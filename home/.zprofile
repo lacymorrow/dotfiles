@@ -64,7 +64,8 @@ if [ -s "$NVM_DIR/nvm.sh" ]; then
             export PATH="$NVM_DIR/versions/node/$__nvm_default_version/bin:$PATH"
         else
             # Find matching version directory (handles major version aliases like "24" -> "v24.x.x")
-            for __nvm_dir in "$NVM_DIR/versions/node/v$__nvm_default_version"*; do
+            # (N) glob qualifier: return empty instead of error when no matches (for aliases like "node")
+            for __nvm_dir in "$NVM_DIR/versions/node/v$__nvm_default_version"*(N); do
                 if [ -d "$__nvm_dir" ]; then
                     export PATH="$__nvm_dir/bin:$PATH"
                     break
