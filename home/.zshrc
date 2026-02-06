@@ -1,4 +1,12 @@
-# ZSH Configuration - Essential options for modern shell experience
+# Interactive shell configuration
+# Only runs for interactive shells. Login setup (PATH, env) is in .zprofile.
+
+# Exit early for non-interactive shells (e.g. opencode shell mode)
+if [[ ! -o interactive ]]; then
+  return
+fi
+
+# Shell behavior
 setopt AUTO_CD              # Change to directory just by typing directory name
 setopt GLOB_STAR_SHORT      # Enable ** for recursive globbing
 setopt HIST_VERIFY          # Show expanded history command before executing
@@ -8,59 +16,22 @@ setopt INC_APPEND_HISTORY   # Add commands to history immediately
 setopt HIST_IGNORE_DUPS     # Don't record duplicate commands
 setopt HIST_IGNORE_SPACE    # Don't record commands starting with space
 setopt HIST_REDUCE_BLANKS   # Remove extra blanks from commands
+setopt HIST_FIND_NO_DUPS    # Don't show duplicates when searching history
+setopt HIST_EXPIRE_DUPS_FIRST # Delete duplicates first when HISTFILE fills up
+setopt EXTENDED_HISTORY      # Write timestamp to history
 setopt CORRECT              # Enable command correction
 setopt COMPLETE_IN_WORD     # Complete from both ends of word
 setopt ALWAYS_TO_END        # Move cursor to end after completion
 
-# History configuration
+# History
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 
-# Additional history options for better behavior
-setopt HIST_FIND_NO_DUPS    # Don't show duplicates when searching history
-setopt HIST_EXPIRE_DUPS_FIRST # Delete duplicates first when HISTFILE fills up
-setopt EXTENDED_HISTORY      # Write timestamp to history
-
-# Ensure consistent PATH for all tools
-# Bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$HOME/go/bin:$HOME/.local/bin:$PATH"
-
-# Added by Windsurf
-export PATH="/Users/lacy/.codeium/windsurf/bin:$PATH"
-
-# lash
-export PATH=/Users/lacy/.lash/bin:$PATH
-
-# Added by Antigravity
-export PATH="/Users/lacy/.antigravity/antigravity/bin:$PATH"
-
-# NVM is loaded in .zprofile
-
-# Cargo env (only if installed)
-[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
-
-# bun completions
-[ -s "/Users/lacy/.bun/_bun" ] && source "/Users/lacy/.bun/_bun"
-
-# Interactive-only configuration
-# `opencode` shell mode runs `zsh -c` and sources this file; skip UI/prompt setup there.
-if [[ ! -o interactive ]]; then
-  return
-fi
-
-# Completions are initialized in .zprofile - just set up git alias completion
-# Git completion for 'g' alias (if it exists)
-if type git &>/dev/null && [ -f ~/.aliases ]; then
-  compdef g=git 2>/dev/null
-fi
-
-# Key bindings for word navigation and deletion
-# Use emacs-style key bindings
+# Key bindings (emacs-style)
 bindkey -e
 
-# Word navigation (Option+Arrow keys)
+# Word navigation (Option+Arrow / Ctrl+Arrow)
 bindkey "^[OC" forward-word         # Option+Right Arrow
 bindkey "^[OD" backward-word        # Option+Left Arrow
 bindkey "^[[1;5C" forward-word      # Ctrl+Right Arrow
@@ -68,19 +39,25 @@ bindkey "^[[1;5D" backward-word     # Ctrl+Left Arrow
 
 # Word deletion
 bindkey "^[^?" backward-kill-word   # Option+Backspace
-bindkey "^W" backward-kill-word     # Ctrl+W (alternative)
+bindkey "^W" backward-kill-word     # Ctrl+W
 bindkey "^[d" kill-word             # Option+Delete
 
 # Fix for different terminal emulators
 bindkey "^[[3~" delete-char         # Delete key
 bindkey "^[3;5~" kill-word          # Ctrl+Delete
 
-# Initialize Starship prompt
-eval "$(starship init zsh)"
-
-# History search key bindings
-# Up/Down arrows for history search based on current input
+# History search (Up/Down arrows search based on current input)
 bindkey '^[[A' history-beginning-search-backward  # Up arrow
 bindkey '^[[B' history-beginning-search-forward   # Down arrow
-bindkey '^P' history-beginning-search-backward    # Ctrl+P (alternative)
-bindkey '^N' history-beginning-search-forward     # Ctrl+N (alternative)
+bindkey '^P' history-beginning-search-backward    # Ctrl+P
+bindkey '^N' history-beginning-search-forward     # Ctrl+N
+
+# Git completion for 'g' alias (if defined in .aliases)
+if type git &>/dev/null && [ -f ~/.aliases ]; then
+  compdef g=git 2>/dev/null
+fi
+
+# Starship prompt (install: brew install starship)
+if command -v starship &>/dev/null; then
+  eval "$(starship init zsh)"
+fi

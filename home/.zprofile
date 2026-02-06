@@ -90,10 +90,19 @@ ngrok() {
     command ngrok "$@"
 }
 
-# Enable ZSH options (equivalent to Bash features)
-setopt AUTO_CD          # Equivalent to autocd
-setopt GLOB_STAR_SHORT  # Equivalent to globstar
+# Common tool paths (guarded — only added if installed)
+# Bun
+if [ -d "$HOME/.bun" ]; then
+    export BUN_INSTALL="$HOME/.bun"
+    export PATH="$BUN_INSTALL/bin:$PATH"
+    [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"  # completions
+fi
 
-# SSH host completion is handled by zsh's built-in _ssh completion
+# Go
+[ -d "$HOME/go/bin" ] && export PATH="$HOME/go/bin:$PATH"
 
-# Git alias completion is set up in .zshrc
+# Cargo/Rust
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+# Local bin
+[ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
