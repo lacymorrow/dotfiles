@@ -1,5 +1,5 @@
 [ui]
-username = Lacy Morrow <me@lacymorrow.com>
+# Set your username: hg config --local ui.username "Your Name <email>"
 editor = vim
 verbose = True
 

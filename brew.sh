@@ -10,16 +10,18 @@ echo ""
 # HomeBrew                                                                    #
 ###############################################################################
 
-# Install Homebrew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Install Homebrew if not present
+if ! command -v brew >/dev/null 2>&1; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Auto-detect Homebrew installation path (Intel vs Apple Silicon)
-if [[ -f "/opt/homebrew/bin/brew" ]]; then
-    # Apple Silicon Mac
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [[ -f "/usr/local/bin/brew" ]]; then
-    # Intel Mac
-    eval "$(/usr/local/bin/brew shellenv)"
+    # Auto-detect Homebrew installation path (Intel vs Apple Silicon)
+    if [ -f "/opt/homebrew/bin/brew" ]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [ -f "/usr/local/bin/brew" ]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+else
+    echo "Homebrew already installed"
 fi
 
 # Disable telemetry

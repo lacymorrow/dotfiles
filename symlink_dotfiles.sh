@@ -12,33 +12,47 @@ olddir="${OLDDIR:-$HOME/dotfiles_old}"             # old dotfiles backup directo
 
 ##########
 
-# create dotfiles_old in homedir
-echo "Creating $olddir for backup of any existing dotfiles in ~"
-mkdir -p $olddir
-echo "...done"
-
-# echo "> Clone firmware"
-
-# Clone files
-# echo "Cloning the dotfiles"
-# git clone --single-branch --branch master https://github.com/lacymorrow/dotfiles.git $dir
-# echo "...done"
-
 # change to the dotfiles directory
 echo "Changing to the $dir directory"
-cd $dir
+cd "$dir" || exit 1
 echo "...done"
 
 if [ -d "$dir" ]; then
 
     # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks
-    echo "Moving any existing dotfiles from ~ to $olddir"
+    echo "Setting up symlinks from ~ to $dir/home"
+
+    created=0
+    skipped=0
+    backed_up=0
 
     # matches all dotfiles, except . and ..
     for file in "$dir"/home/.[!.]*; do
-        mv  ~/$(basename "$file") $olddir 2> /dev/null
+        target="$HOME/$(basename "$file")"
+
+        # Check if symlink already points to the correct target
+        if [ -L "$target" ]; then
+            current="$(readlink "$target")"
+            if [ "$current" = "$file" ] || [ "$(cd "$(dirname "$current")" 2>/dev/null && pwd)/$(basename "$current")" = "$(cd "$(dirname "$file")" && pwd)/$(basename "$file")" ]; then
+                skipped=$((skipped + 1))
+                continue
+            fi
+        fi
+
+        # Back up existing file/symlink
+        if [ -e "$target" ] || [ -L "$target" ]; then
+            echo "Backing up $target to $olddir"
+            mkdir -p "$olddir"
+            mv "$target" "$olddir/" 2>/dev/null
+            backed_up=$((backed_up + 1))
+        fi
+
         echo "Creating symlink to $file in home directory."
-        ln -s $file ~/$(basename "$file")
+        ln -s "$file" "$target"
+        created=$((created + 1))
     done
+
+    echo ""
+    echo "Symlinks: $created created, $skipped already correct, $backed_up backed up"
 
 fi

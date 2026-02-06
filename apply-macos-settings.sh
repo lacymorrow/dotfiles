@@ -6,10 +6,18 @@
 
 # ~/.osx — http://mths.be/osx
 
-# Computer/Host name
-name="zero"
-
-workmachine=true
+# Computer/Host name — set via env var, argument, or fall back to current hostname
+name="${DOTFILES_COMPUTER_NAME:-${1:-}}"
+workmachine="${DOTFILES_WORK_MACHINE:-${2:-}}"
+if [ -z "$name" ]; then
+    name="$(scutil --get ComputerName 2>/dev/null || hostname -s)"
+    read -rp "Computer name [$name]: " input
+    name="${input:-$name}"
+fi
+if [ -z "$workmachine" ]; then
+    read -rp "Work machine? (true/false) [false]: " input
+    workmachine="${input:-false}"
+fi
 
 # Close any open System Preferences panes, to prevent them from overriding
 # settings we’re about to change
@@ -59,10 +67,10 @@ sudo defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool tr
 
 # Set computer name (as done via System Preferences → Sharing)
 
-sudo scutil --set ComputerName "Zero"
-sudo scutil --set HostName "Zero"
-sudo scutil --set LocalHostName "Zero"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "Zero"
+sudo scutil --set ComputerName "$name"
+sudo scutil --set HostName "$name"
+sudo scutil --set LocalHostName "$name"
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$name"
 
 # Set sidebar icon size to medium
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 1

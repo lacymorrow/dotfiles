@@ -89,5 +89,8 @@ Thumbs.db
 # home/.npmrc is safe to commit — it uses ${NPM_TOKEN} env var interpolation.
 # Set the actual token in ~/.secrets (sourced by .zprofile, never committed).
 
+# Setup wizard dependencies
+setup/node_modules/
+
 # next.js build output
 .next
