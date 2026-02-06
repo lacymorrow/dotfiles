@@ -18,8 +18,9 @@ fi
 
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
+# * ~/.secrets for API tokens and credentials (never committed).
 # * ~/.extra can be used for other settings you don't want to commit.
-for file in ~/.{path,exports,aliases,docker_aliases,functions,extra}; do
+for file in ~/.{path,exports,aliases,docker_aliases,functions,secrets,extra}; do
 	[ -r "$file" ] && [ -f "$file" ] && [ -s "$file" ] && source "$file"
 done
 unset file

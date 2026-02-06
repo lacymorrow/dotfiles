@@ -1,207 +1,108 @@
-🔥 .dotfiles
-========
+# dotfiles
 
 > The (dot)files that make the magic happen.
 
-Highly-opinionated, UNIX-friendly, macOS-directed
+Highly-opinionated, UNIX-friendly, macOS-directed.
 
 ## Quick Start
 
-```
-bash <(curl -s https://raw.githubusercontent.com/lacymorrow/dotfiles/master/mac.sh)
-```
+```bash
+# 1. Clone
+git clone https://github.com/lacymorrow/dotfiles.git ~/dotfiles
 
-Or...
+# 2. Symlink dotfiles to home directory (backs up existing files first)
+cd ~/dotfiles && ./symlink_dotfiles.sh
 
-```
-bash <(curl -s https://raw.githubusercontent.com/lacymorrow/dotfiles/master/brew.sh)
-```
-
-```
-bash <(curl -s https://raw.githubusercontent.com/lacymorrow/dotfiles/master/node.sh)
-```
-
-```
-bash <(curl -s https://raw.githubusercontent.com/lacymorrow/dotfiles/master/.osx)
+# 3. Install tools (pick what you need)
+./brew.sh       # Homebrew packages
+./node.sh       # Node.js via NVM
+./mac.sh        # macOS setup & defaults
 ```
 
-### Setup
+## What's Included
 
-- Clone the repo
+### Shell (`home/`)
 
-- Github tracking is on by default
+All files in `home/` are symlinked to `~/` by `symlink_dotfiles.sh`.
 
-- To install Mercurial Tracking, clone the repo [hg-prompt](https://bitbucket.org/sjl/hg-prompt/) into your `/Appplications` folder. Ex: _/Applications/hg-prompt/prompt.py_
+| File | Purpose |
+|------|---------|
+| `.zprofile` | Login shell setup — Homebrew, NVM, completions, sources dotfile modules |
+| `.zshrc` | Interactive shell — zsh options, key bindings, Starship prompt |
+| `.aliases` | Shell aliases |
+| `.functions` | Shell functions |
+| `.exports` | Environment variables |
+| `.gitconfig` | Git config, aliases, colors, URL shorthands |
+| `.npmrc` | npm defaults — uses `${NPM_TOKEN}` env var for auth (see Secrets below) |
+| `.vimrc` | Vim config — line numbers, search, backup/undo, status line |
+| `.tmux.conf` | Tmux config — `Ctrl-a` prefix, vim-style navigation, TPM plugins |
+| `starship.toml` | Starship prompt theme |
 
-- The shell bindings are created for ZSH, and the `uber.zsh-theme` is included to theme [robbyrussel/oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
+### Scripts
 
-- Finally, to install all the bindings, aliases, etc, run `./.osx` or `sh .osx`. _add the `--verbose` param optionally._
+| Script | What it does |
+|--------|-------------|
+| `symlink_dotfiles.sh` | Symlinks `home/*` to `~/`, backs up existing files to `~/dotfiles_old` |
+| `brew.sh` | Installs Homebrew packages |
+| `node.sh` | Installs NVM and Node.js |
+| `mac.sh` | macOS system preferences and setup |
+| `apply-macos-settings.sh` | Detailed macOS defaults |
 
-### Usage
+### Other
 
-`git fuck` is my most used alias (aliased to `git reset HEAD --hard`)
+| File | Purpose |
+|------|---------|
+| `Brewfile` | Declarative Homebrew dependencies |
+| `settings/` | App-specific settings (VS Code, etc.) |
+| `.ssh/` | SSH config template |
 
-This package works on any \*nix-based system, partially on windows
+## Secrets
 
-### Extras
+Tokens and credentials go in `~/.secrets` — this file is sourced automatically by `.zprofile` but is **never committed** to this repo.
 
-Don't forget screensavers! I like the [Google Trends](https://www.google.com/trends/hottrends/visualize) personally.
+```bash
+# ~/.secrets — create this on each machine
+export NPM_TOKEN="your-npm-token-here"
+# Add other API keys, credentials, etc.
+```
 
-- Homebrew, Node, etc...
-- _From [Sindré](https://github.com/sindresorhus/quick-look-plugins):_ `brew cask install qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package quicklookase qlvideo`
+This is how `home/.npmrc` works safely — it references `${NPM_TOKEN}` which npm interpolates at runtime. No token in the repo, no token in git history.
 
-## Quick start
+The file is optional. If `~/.secrets` doesn't exist, it's silently skipped. `~/.extra` also works the same way for non-secret local customizations.
 
-- Clone or download this repo into cd ~/dotfiles
-- `chmod +x bootstrap.sh`
-- `./bootstrap.sh`
+## Customization
 
-> Shamelessly influenced by [mplacona](https://github.com/mplacona/dotfiles)
+The dotfile loading order in `.zprofile` is:
 
-## Notes
+```
+~/.path → ~/.exports → ~/.aliases → ~/.docker_aliases → ~/.functions → ~/.secrets → ~/.extra
+```
 
-coda FTP keys/passwords
-env keys/secrets or repo
+All files are optional — missing ones are silently skipped.
 
-OSX FIRST SETUP
+- **`~/.secrets`** — API tokens, credentials (never committed)
+- **`~/.extra`** — Machine-specific overrides, non-secret customizations (never committed)
+- **`~/.path`** — Additional `$PATH` entries
 
-- Connect iCloud (optional)
+## Key Highlights
 
-- System Preferences
-  -- Enable Dictation
-  -- General > Jump to scroll where clicked
-  -- Screensaver > Google Trends
-  -- Sharing
+### Git
 
-Taskbar
+- `git go <branch>` — checkout or create branch
+- `git dm` — delete merged branches
+- `git fuck` — `reset HEAD --hard`
+- `git pushup` / `git pu` — push and set upstream
+- `push.autoSetupRemote = true` — new branches auto-track upstream
 
-- Battery: show percent
+### Tmux (`Ctrl-a` prefix)
 
-Finder:
+- `|` / `-` — split horizontal / vertical
+- `h` `j` `k` `l` — navigate panes
+- `H` `J` `K` `L` — resize panes
+- TPM with tmux-sensible and tmux-resurrect
 
-- Create repo folder
-- Move applications to dock
-- Move Documents to dock
+### Vim
 
-Install:
-
-- Brew
-- Oh my zsh
-- NVM
-- Nvm install node
-- npm I -g yarn
-- Coda
-- Chrome
-- Firefox
-- Elgato Control Center
-- Obsidian (Maybe Joplin?)
-- Parsec
-- Private Internet Access
-- Steam
-- Sublime
-- Symless
-- TunnelBlick (For Router VPN)
-- Tunnelblick
-- Wireguard
-- VLC
-- VSCode
-- XCode
-- Warp Terminal
-- Wireguard (for unraid VPN)
-- ZoomInstaller
-
-Through App Store:
-
-- Amphetamine
-- Bettersnaptool
-- Coda
-- Flycut
-- Slack
-- Pages
-
-Terminal
-
-- Type ‘git’ to install Git
-
-LAN
-
-- Tunnelblick to connect to XR Router
-- Wireguard to connect to Server (Unraid)
-
-Remove Cruft from dock
-
-- Siri
-- Mail
-- Contacts
-- Maps
-- Facetime
-- Itunes
-- Books
-- App Store
-
-Add to dock
-
-- Chrome
-- Firefox
-- VScode
-- Sublime
-
-Chrome/Firefox
-
-- Bitwarden extension
-
-VSCode:
-
-- Add ‘code’ to path
-
-Flycut:
-
-- Change shortcut
-
-.dotfiles
-
--BetterSnapTool (bettertouchtool)
-_-amphetamine
--adobe
--clamXav (antivirus)
--etcher
--firefox
--flycut
--hg-prompt
--insimnia
--kap
--keka
--ngrok
--obs
--Office
--Popcorn time
--Radiant (google play client)
--screenhero
--sketch
--slack
--sourcetree
--SQLPro
--steam
-_-coda
-_-codekit
-_-dash
-_-docker
-_-Gimp
-_-iterm
-_-sublime
-_-transmission
-_-unetbootn
--unity
-_-unrarx
-_-vlc
-_-virtualbox
-_-vmware fusion
-\*-VVV + VV
-
-- Turbotax
-
-\*install via brew
-
-Sublime package control packages
-
-Google Trends screensaver
+- Relative line numbers, 80-char column guide
+- Persistent undo, system clipboard
+- Netrw tree view (no plugins needed)
