@@ -176,6 +176,11 @@
 
 	# Detect copies as well as renames.
 	renames = copies
+	tool = critique
+
+[difftool "critique"]
+
+	cmd = critique difftool "$LOCAL" "$REMOTE"
 
 [diff "bin"]
 

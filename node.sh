@@ -17,12 +17,17 @@ export NVM_DIR="$HOME/.nvm"
 # Install latest Node
 nvm install node
 
-# Install NPM global packages
+# Install Bun
+curl -fsSL https://bun.sh/install | bash
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Install global packages via Bun
 for app in "yarn" \
-	"bun" \
 	"pnpm" \
 	"eslint" \
 	"npm-check-updates" \
+	"critique" \
 	; do
-	npm install -g "${app}"
+	bun install -g "${app}"
 done
