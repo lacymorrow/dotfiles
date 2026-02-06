@@ -85,8 +85,9 @@ Thumbs.db
 # dotenv environment variables file
 .env
 
-# npm configuration (may contain auth tokens)
-home/.npmrc
+# npm configuration
+# home/.npmrc is safe to commit — it uses ${NPM_TOKEN} env var interpolation.
+# Set the actual token in ~/.extra (sourced by .zprofile, never committed).
 
 # next.js build output
 .next
