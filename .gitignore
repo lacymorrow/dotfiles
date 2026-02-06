@@ -85,8 +85,8 @@ Thumbs.db
 # dotenv environment variables file
 .env
 
-# npm configuration
-# home/.npmrc
+# npm configuration (may contain auth tokens)
+home/.npmrc
 
 # next.js build output
 .next
