@@ -404,6 +404,15 @@ async function main() {
     }
   }
 
+  // ── Lacy Shell ────────────────────────────────────────────────────────
+  p.log.step('Installing Lacy Shell...');
+  try {
+    execSync('npx -y lacy@latest', { stdio: 'inherit', cwd: DOTFILES_DIR });
+    p.log.success('Lacy Shell installed');
+  } catch (e) {
+    p.log.error(`Lacy Shell install failed: ${e.message}`);
+  }
+
   // ── Restart (macOS) ─────────────────────────────────────────────────
   if (IS_MACOS && modules.includes('macos')) {
     const restart = await p.confirm({
