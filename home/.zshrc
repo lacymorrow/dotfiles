@@ -61,3 +61,7 @@ fi
 if command -v starship &>/dev/null; then
   eval "$(starship init zsh)"
 fi
+
+# Lacy Shell
+source /Users/lacy/.lacy/lacy.plugin.zsh
+export PATH="/Users/lacy/.lacy/bin:$PATH"
