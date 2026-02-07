@@ -1,5 +1,6 @@
 tap "buo/cask-upgrade"
 # CLI tools
+brew "bash"
 brew "bat"
 brew "ffmpeg"
 brew "glib"

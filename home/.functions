@@ -7,55 +7,15 @@ timezsh() {
   for i in $(seq 1 10); do /usr/bin/time $shell -i -c exit; done
 }
 
-# Battery level gauge for Oh My Zsh theme
-battery_level_gauge() {
-  if command -v pmset &>/dev/null; then
-    local battery_level=$(pmset -g batt | grep -Eo "\d+%" | cut -d% -f1)
-    if [[ -n "$battery_level" ]]; then
-      if [[ $battery_level -ge 80 ]]; then
-        echo "🔋"
-      elif [[ $battery_level -ge 60 ]]; then
-        echo "🔋"
-      elif [[ $battery_level -ge 40 ]]; then
-        echo "🪫"
-      elif [[ $battery_level -ge 20 ]]; then
-        echo "🪫"
-      else
-        echo "🪫"
-      fi
-    fi
-  fi
-}
-
-# Simple battery percentage
-battery_pct_prompt() {
-  if command -v pmset &>/dev/null; then
-    pmset -g batt | grep -Eo "\d+%" || echo ""
-  fi
-}
-
 # Create a new directory and enter it
 function mkd() {
 	mkdir -p "$@" && cd "$_";
-}
-# Fastest possible way to check if repo is dirty. a savior for the WebKit repo.
-function parse_git_dirty() {
-   git diff --quiet --ignore-submodules HEAD 2>/dev/null; [ $? -eq 1 ] && echo '*'
-}
-
-function parse_git_branch() {
-	git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/\1$(parse_git_dirty)/"
 }
 
 # Quick git add, commit, and push. Optional commit message argument.
 # Usage: gg or gg "your commit message"
 gg() {
 	git status && git add . && git commit -am "${1:-auto commit}" && git pushup
-}
-
-# Only show username/host if not default
-function usernamehost() {
-    if [ $USER != $default_username ]; then echo "${MAGENTA}$USER ${WHITE}at ${ORANGE}$HOSTNAME $WHITEin "; fi
 }
 
 # Active network listners
@@ -147,9 +107,7 @@ function dataurl() {
 function server() {
 	local port="${1:-8000}";
 	sleep 1 && open "http://localhost:${port}/" &
-	# Set the default Content-Type to `text/plain` instead of `application/octet-stream`
-	# And serve everything as UTF-8 (although not technically correct, this doesn’t break anything for binary files)
-	python -c $'import SimpleHTTPServer;\nmap = SimpleHTTPServer.SimpleHTTPRequestHandler.extensions_map;\nmap[""] = "text/plain";\nfor key, value in map.items():\n\tmap[key] = value + ";charset=UTF-8";\nSimpleHTTPServer.test();' "$port";
+	python3 -m http.server "$port";
 }
 
 # Start a PHP server from a directory, optionally specifying the port

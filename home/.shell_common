@@ -1,0 +1,73 @@
+# Shared login shell setup — sourced by both .zprofile and .bash_profile
+# Uses POSIX-compatible syntax (no zsh glob qualifiers, no bashisms)
+
+# Guard against double-sourcing
+[ -n "$__shell_common_loaded" ] && return
+__shell_common_loaded=1
+
+# Add ~/bin to PATH
+export PATH="$HOME/bin:$PATH"
+
+# Homebrew: detect Apple Silicon vs Intel
+if [ -f "/opt/homebrew/bin/brew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -f "/usr/local/bin/brew" ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# Source shared dotfiles (all optional — missing files silently skipped)
+for file in ~/.path ~/.exports ~/.aliases ~/.docker_aliases ~/.functions ~/.secrets ~/.extra; do
+    [ -r "$file" ] && [ -f "$file" ] && [ -s "$file" ] && . "$file"
+done
+unset file
+
+# NVM setup
+export NVM_DIR="$HOME/.nvm"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    # Fast path: add NVM default node to PATH before loading NVM
+    if [ -f "$NVM_DIR/alias/default" ]; then
+        __nvm_default_version=$(cat "$NVM_DIR/alias/default")
+        if [ -d "$NVM_DIR/versions/node/v$__nvm_default_version" ]; then
+            export PATH="$NVM_DIR/versions/node/v$__nvm_default_version/bin:$PATH"
+        elif [ -d "$NVM_DIR/versions/node/$__nvm_default_version" ]; then
+            export PATH="$NVM_DIR/versions/node/$__nvm_default_version/bin:$PATH"
+        else
+            # Handle major version aliases (e.g. "24" -> "v24.x.x")
+            for __nvm_dir in "$NVM_DIR/versions/node/v${__nvm_default_version}"*; do
+                if [ -d "$__nvm_dir" ]; then
+                    export PATH="$__nvm_dir/bin:$PATH"
+                    break
+                fi
+            done
+        fi
+        unset __nvm_default_version __nvm_dir
+    fi
+
+    # Load NVM
+    \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+fi
+
+# Ngrok completions — lazy load on first use
+ngrok() {
+    unset -f ngrok
+    if command -v ngrok >/dev/null 2>&1; then
+        eval "$(command ngrok completion)"
+    fi
+    command ngrok "$@"
+}
+
+# Bun
+if [ -d "$HOME/.bun" ]; then
+    export BUN_INSTALL="$HOME/.bun"
+    export PATH="$BUN_INSTALL/bin:$PATH"
+fi
+
+# Go
+[ -d "$HOME/go/bin" ] && export PATH="$HOME/go/bin:$PATH"
+
+# Cargo/Rust
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+# Local bin
+[ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"

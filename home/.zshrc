@@ -25,8 +25,8 @@ setopt ALWAYS_TO_END        # Move cursor to end after completion
 
 # History
 HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
+HISTSIZE=32768
+SAVEHIST=32768
 
 # Key bindings (emacs-style)
 bindkey -e
