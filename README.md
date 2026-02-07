@@ -40,12 +40,17 @@ You can also run individual scripts directly:
 
 All files in `home/` are symlinked to `~/` by the setup wizard (or `symlink_dotfiles.sh`).
 
+Works with both **Zsh** (default on macOS) and **Bash** (4+, installed via Homebrew).
+
 | File | Purpose |
 |------|---------|
-| `.zprofile` | Login shell setup — Homebrew, NVM, completions, sources dotfile modules |
-| `.zshrc` | Interactive shell — zsh options, key bindings, Starship prompt |
-| `.aliases` | Shell aliases |
-| `.functions` | Shell functions |
+| `.shell_common` | **Shared login setup** — Homebrew, NVM, Bun, Go, Cargo, sources dotfile modules (POSIX-compatible, used by both zsh and bash) |
+| `.zprofile` | Zsh login shell — sources `.shell_common` + zsh plugins/completions |
+| `.zshrc` | Zsh interactive shell — options, key bindings, Starship prompt |
+| `.bash_profile` | Bash login shell — sources `.shell_common` + bash options/completions |
+| `.bashrc` | Bash interactive shell — history, Starship prompt |
+| `.aliases` | Shell aliases (shared, with zsh-only guards where needed) |
+| `.functions` | Shell utility functions |
 | `.exports` | Environment variables |
 | `.gitconfig` | Git config, aliases, colors, URL shorthands |
 | `.npmrc` | npm defaults — uses `${NPM_TOKEN}` env var for auth (see Secrets below) |
@@ -87,7 +92,7 @@ The tracked `.gitconfig` includes it via `[include] path = ~/.gitconfig.local`.
 
 ## Secrets
 
-Tokens and credentials go in `~/.secrets` — this file is sourced automatically by `.zprofile` but is **never committed** to this repo.
+Tokens and credentials go in `~/.secrets` — this file is sourced automatically by `.shell_common` (on login) but is **never committed** to this repo.
 
 ```bash
 # ~/.secrets — create this on each machine
@@ -101,7 +106,7 @@ The file is optional. If `~/.secrets` doesn't exist, it's silently skipped. `~/.
 
 ## Customization
 
-The dotfile loading order in `.zprofile` is:
+The shared login setup (`.shell_common`, sourced by both `.zprofile` and `.bash_profile`) loads dotfiles in this order:
 
 ```
 ~/.path → ~/.exports → ~/.aliases → ~/.docker_aliases → ~/.functions → ~/.secrets → ~/.extra
