@@ -31,7 +31,7 @@ if [ -s "$NVM_DIR/nvm.sh" ]; then
             export PATH="$NVM_DIR/versions/node/v$__nvm_default_version/bin:$PATH"
         elif [ -d "$NVM_DIR/versions/node/$__nvm_default_version" ]; then
             export PATH="$NVM_DIR/versions/node/$__nvm_default_version/bin:$PATH"
-        else
+        elif [ "$__nvm_default_version" != "system" ]; then
             # Handle major version aliases (e.g. "24" -> "v24.x.x")
             for __nvm_dir in "$NVM_DIR/versions/node/v${__nvm_default_version}"*; do
                 if [ -d "$__nvm_dir" ]; then
