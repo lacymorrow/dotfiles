@@ -1,21 +1,46 @@
 tap "buo/cask-upgrade"
+tap "anomalyco/tap"
+tap "bjarneo/cliamp"
+tap "cloudflare/cloudflare"
+tap "lacymorrow/tap"
+tap "oven-sh/bun"
+tap "steipete/tap"
+tap "supabase/tap"
 
 ###############################################################################
 # CLI tools                                                                   #
 ###############################################################################
+brew "asciinema"
 brew "bash"
 brew "bat"
+brew "cloudflared"
+brew "cmake"
 brew "coreutils"          # GNU coreutils (gls, gdate, etc.)
+brew "docker"
 brew "ffmpeg"
+brew "flac"
+# brew "flyctl"
+brew "gemini-cli"
 brew "glib"
+brew "gopls"
+brew "goreleaser"
 brew "imagemagick"
+brew "libvorbis"
 brew "mas"
+brew "mkcert"
+brew "nss"
+# brew "openai-whisper"
+brew "pkgconf"
+brew "poetry"
+brew "python-yq"
 brew "ripgrep"
 brew "rpm"
 brew "snapcraft"
 brew "starship"
 brew "trash"
+brew "uv"
 brew "wget"
+brew "yt-dlp"
 brew "zlib"
 brew "zsh-autosuggestions"
 brew "zsh-completions"
@@ -50,6 +75,12 @@ brew "open-ocd"           # JTAG/SWD debugging (formula is open-ocd, not openocd
 brew "dtc"                # device tree compiler (Raspberry Pi overlays)
 brew "xz"                 # decompressing .img.xz OS images
 
+# Tapped CLI tools
+brew "anomalyco/tap/opencode"
+brew "bjarneo/cliamp/cliamp"
+brew "oven-sh/bun/bun"
+brew "supabase/tap/supabase"
+
 ###############################################################################
 # Cask apps                                                                   #
 ###############################################################################
@@ -64,6 +95,7 @@ cask "google-chrome"
 cask "gimp"
 # cask "inkscape"
 cask "ngrok"
+# cask "openscad"
 # cask "postman"
 cask "slack"
 cask "spotify"
@@ -105,4 +137,8 @@ cask "quicklook-video"    # renamed upstream — the old "qlvideo" cask is gone
 ###############################################################################
 mas "Amphetamine", id: 937984704
 # mas "BetterSnapTool", id: 417375580
+# mas "Codelime", id: 1622145140
 mas "Flycut", id: 442160987
+# mas "GoPro Player", id: 1460836908
+# mas "Gyroflow", id: 6447994244
+# mas "SnippetsLab", id: 1006087419
