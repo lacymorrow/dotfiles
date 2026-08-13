@@ -39,17 +39,37 @@ function _is_this_host() {
   { ifconfig 2>/dev/null; ip -4 -o addr show 2>/dev/null; } | grep -qE "inet $1( |/)"
 }
 
-# Attach to a tmux session on a remote host — or locally, when we're already on it
-function _tmux_session() {
-  local ip="$1" session="$2"
-  if _is_this_host "$ip"; then
-    if [ -n "$TMUX" ]; then
-      tmux new-session -As "$session" -d && tmux switch-client -t "$session"
-    else
-      tmux new -As "$session"
-    fi
-  else
+# Open one of the agent sessions.  From another machine we mosh into the host;
+# on the host itself we run the real binary in a local tmux session — these
+# functions share a name with the executables in ~/.local/bin and would
+# otherwise shadow them.
+# usage: _agent_session <host-ip> <session> <title> <command> [args...]
+function _agent_session() {
+  local ip="$1" session="$2" title="$3"
+  shift 3
+  printf '\e]0;%s\a' "$title"
+
+  if ! _is_this_host "$ip"; then
     mosh "mplacona@$ip" -- tmux new -As "$session"
+    return
+  fi
+
+  # Args, or already sitting in the session: just run the agent right here.
+  if [ "$#" -gt 1 ] || [ "$(tmux display-message -p '#S' 2>/dev/null)" = "$session" ]; then
+    command "$@"
+    return
+  fi
+
+  # Start it detached.  A clean quit closes the session; a crash drops to a
+  # shell instead, so the error stays on screen to read.
+  if ! tmux has-session -t "$session" 2>/dev/null; then
+    tmux new-session -d -s "$session" "command $* || exec ${SHELL:-/bin/zsh}"
+  fi
+
+  if [ -n "$TMUX" ]; then
+    tmux switch-client -t "$session"
+  else
+    tmux attach -t "$session"
   fi
 }
 
@@ -64,14 +84,12 @@ function vps() {
   ssh mplacona@100.102.111.19
 }
 
-# Remote sessions via mosh (attach if exists, create if not)
+# Hermes agent sessions — live on the Mac mini, reachable from anywhere
 function clientwork() {
-  printf '\e]0;🟢 ClientWork\a'
-  _tmux_session 100.68.121.13 clientwork
+  _agent_session 100.68.121.13 clientwork '🟢 ClientWork' clientwork "$@"
 }
 
 function hermes() {
-  printf '\e]0;⚫ Hermes\a'
-  _tmux_session 100.68.121.13 hermes
+  _agent_session 100.68.121.13 hermes '⚫ Hermes' hermes "$@"
 }
 
