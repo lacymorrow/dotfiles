@@ -1,7 +1,10 @@
 # Aliases
 alias prettyjson='python -m json.tool'
 alias adb-list='adb shell pm list packages -3'
-alias brew="env PATH=${PATH//$(pyenv root)\/shims:/} brew"
+# Only strip pyenv shims from brew's PATH on machines that have pyenv
+if command -v pyenv >/dev/null 2>&1; then
+  alias brew="env PATH=${PATH//$(pyenv root)\/shims:/} brew"
+fi
 alias brewup='brew update; brew upgrade; brew cleanup; brew doctor'
 alias speedtest='curl -o /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip'
 alias reload='source ~/.zshrc'
@@ -30,10 +33,24 @@ function devrel() {
   tmux attach -t devrel
 }
 
-# MentionDrop tmux session
-function mentiondrop() {
-  printf '\e]0;🟣 MentionDrop\a'
-  mosh mplacona@100.102.111.19 -- tmux new -As mentiondrop
+# True when the given IP is bound to one of this machine's interfaces.
+# Checks both macOS (ifconfig) and Linux (iproute2) so the same file works everywhere.
+function _is_this_host() {
+  { ifconfig 2>/dev/null; ip -4 -o addr show 2>/dev/null; } | grep -qE "inet $1( |/)"
+}
+
+# Attach to a tmux session on a remote host — or locally, when we're already on it
+function _tmux_session() {
+  local ip="$1" session="$2"
+  if _is_this_host "$ip"; then
+    if [ -n "$TMUX" ]; then
+      tmux new-session -As "$session" -d && tmux switch-client -t "$session"
+    else
+      tmux new -As "$session"
+    fi
+  else
+    mosh "mplacona@$ip" -- tmux new -As "$session"
+  fi
 }
 
 # VPS tmux session + SSH
@@ -50,11 +67,11 @@ function vps() {
 # Remote sessions via mosh (attach if exists, create if not)
 function clientwork() {
   printf '\e]0;🟢 ClientWork\a'
-  mosh mplacona@100.68.121.13 -- tmux new -As clientwork
+  _tmux_session 100.68.121.13 clientwork
 }
 
 function hermes() {
   printf '\e]0;⚫ Hermes\a'
-  mosh mplacona@100.68.121.13 -- tmux new -As hermes
+  _tmux_session 100.68.121.13 hermes
 }
 
