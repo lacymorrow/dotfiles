@@ -101,29 +101,33 @@ port = 54334
 
 ## Things worth knowing
 
-**Match the project's pinned CLI.** The wrapper prefers
-`node_modules/.bin/supabase` over the Homebrew one. This is not tidiness: CLI
-2.102 fails to apply LinkIntel's `20250810000001_insert_demo_sample_data.sql`
-(it mis-splits a dollar-quoted function body and Postgres rejects the truncated
-statement), while the pinned 2.39.2 applies it fine. Same failure would happen
-with local Docker, but a fresh bootstrap is what exposes it.
+**Pinning a CLI is optional.** Both projects replay cleanly on the current CLI,
+so use the Homebrew one everywhere. The wrapper still prefers a project's
+`node_modules/.bin/supabase` when one exists, which is there as a safety valve:
+this tool has shipped two migration-breaking regressions, so if a release ever
+breaks a project mid-flight, pin that project and keep working.
 
 **A fresh bootstrap exposes CLI migration bugs.** Nothing to do with porg: the
 containers just happen to start from an empty database, so every migration
-replays for the first time in a long while. Two upstream bugs bite, both in
-[supabase/cli#5139](https://github.com/supabase/cli/issues/5139), closed as not
-planned:
+replays for the first time in a long while. Both projects hit one, and both are
+now fixed in the migration, so **every project runs on the current CLI**. Fix the
+migration, do not chase CLI versions: there is no version that avoids both bugs,
+and older CLIs pull older service images that no longer match the data volume.
 
-- `syntax error at end of input` (42601): the CLI mis-splits a dollar-quoted
-  function body. LinkIntel hits this on 2.102 and not on its pinned 2.39.2.
+- `syntax error at end of input` (42601): the splitter truncates a function body
+  mid-statement. LinkIntel's demo-data migration wrote `IF x % CASE ... END = 0`;
+  hoisting the CASE into a variable fixed it.
 - `CREATE INDEX CONCURRENTLY cannot be executed within a pipeline` (25001): the
   CLI wraps each migration in a statement pipeline, which rejects CONCURRENTLY.
-  No released version avoids both, so the fix is in the migration: keep the
-  non-concurrent form in the file and apply CONCURRENTLY to prod by hand.
-  MentionDrop already had that convention; one early migration had been missed.
+  Keep the non-concurrent form in the file and apply CONCURRENTLY to prod by hand.
 
-If a migration fails, check it against psql through the tunnel before believing
-the SQL is wrong. psql uses the simple-query protocol and applies both cases fine.
+Both are [supabase/cli#5139](https://github.com/supabase/cli/issues/5139), closed
+as not planned. In both cases a later migration already superseded the broken one,
+but replay dies before reaching it, so the early file is what has to change. Both
+were already applied on prod, where the edits are no-ops.
+
+If a migration fails, apply it with psql through the tunnel before believing the
+SQL is wrong. psql uses the simple-query protocol and swallows both cases fine.
 
 **Log analytics is off.** vector/logflare need the Docker socket bind-mounted
 from the machine running the containers, and the CLI can't resolve a socket path
