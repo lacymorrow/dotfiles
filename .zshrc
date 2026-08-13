@@ -20,14 +20,8 @@ source $ZSH/oh-my-zsh.sh
 
 # Core PATH - use $HOME everywhere so this works on any machine
 export PATH=$PATH:/usr/local/bin
-export PATH=$PATH:/usr/local/heroku/bin
 export PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin
-export PATH=$PATH:/usr/local/git/bin
-export PATH=$PATH:$HOME/Installs/depot_tools
-export PATH=$PATH:/usr/local/mysql/bin
 export PATH=$PATH:/usr/local/sbin
-export PATH=$PATH:$HOME/Library/Android/sdk/platform-tools
-export PATH=$PATH:/Applications/gradle-2.2/bin
 export PATH=$PATH:$HOME/.local/bin
 
 source ~/.profile
@@ -41,9 +35,6 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
-
-export PATH="$HOME/.jenv/bin:$PATH"
-eval "$(jenv init -)"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -68,10 +59,6 @@ export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 
 # Antigravity
 export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
-
-# sdkman - must be at the end
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 # Powerlevel10k
 if [[ -n "$CURSOR_AGENT" ]]; then
