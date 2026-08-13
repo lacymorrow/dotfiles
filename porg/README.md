@@ -43,7 +43,16 @@ the CLI's many small Docker API calls stay fast. `.zshrc` sources
 `porg/porg.zsh`, which wraps the `supabase` command.
 
 Requirements: Tailscale connected (porg resolves over the tailnet, so this works
-away from home) and your SSH key authorised on porg.
+away from home) and your SSH key authorised on porg. If Tailscale stops, `porg`
+stops resolving entirely, the tunnel retries in a loop and every port reads as
+closed. `porg-tunnel status` says so in as many words.
+
+Write `~/.zshrc.local` before pulling dotfiles onto a fresh machine, not after.
+`.zshrc` and `.aliases` are symlinks into the repo, so a pull changes the live
+shell straight away, and machine-specific PATH entries live only in that
+gitignored file. On the MacBook that means `~/.local/node/bin`, where node and
+the `pi` agent both live, so leaving it out breaks the shell before you get as
+far as Supabase.
 
 ## Daily use
 
@@ -68,9 +77,11 @@ the tunnel is up first, and syncs the files the containers bind-mount.
 | `porg-docker …` | Any docker command against porg |
 | `supabase-local …` | Escape hatch: use this Mac's own Docker |
 
-Because both machines tunnel the same ports, **run a given project's stack from
-one machine at a time**. The second machine reaches the same containers through
-its own tunnel without starting anything: just run the app.
+Worth being blunt about: there is now **one shared database per project**, not a
+local copy each. Both Macs tunnel to the same containers, so a `db reset` from
+either one rebuilds the database both of them are using, and a change that feels
+local is visible from the other machine. Run a given project's stack from one
+machine at a time. The second machine starts nothing: it just runs the app.
 
 ## Adding a project
 

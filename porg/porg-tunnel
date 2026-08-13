@@ -99,6 +99,15 @@ cmd_status() {
   # so this counts open listeners, not healthy services. Use `supabase status`
   # inside a project to check whether that project's stack is actually up.
   echo "porg-tunnel: $listening/$total local forwards open"
+
+  # Say why it is down rather than leaving a bare zero. A stopped Tailscale is
+  # the usual cause: porg stops resolving entirely and ssh retries in a loop.
+  if ! ssh -o BatchMode=yes -o ConnectTimeout=5 "$PORG_HOST" true 2>/dev/null; then
+    echo "porg-tunnel: cannot ssh to $PORG_HOST"
+    if ! ping -c1 -t2 "$PORG_HOST" >/dev/null 2>&1; then
+      echo "porg-tunnel: $PORG_HOST does not resolve. Is Tailscale connected?"
+    fi
+  fi
   echo "porg-tunnel: log $LOG"
 }
 
