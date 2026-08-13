@@ -17,6 +17,7 @@ alias p='cd ~/Projects/'
 alias d='cd ~/Downloads/'
 alias dev='cd ~/Projects/DevRelWork'
 alias o='cd "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian Vault"'
+alias pi='~/.pi/agent/sync-local-models.py >/dev/null && /opt/homebrew/bin/pi'
 
 # DevRel tmux session
 function devrel() {
@@ -49,11 +50,11 @@ function vps() {
 # Remote sessions via mosh (attach if exists, create if not)
 function clientwork() {
   printf '\e]0;🟢 ClientWork\a'
-  mosh mplacona@100.102.111.19 -- tmux new -As clientwork
+  mosh mplacona@100.68.121.13 -- tmux new -As clientwork
 }
 
 function hermes() {
   printf '\e]0;⚫ Hermes\a'
-  mosh mplacona@100.102.111.19 -- tmux new -As hermes
+  mosh mplacona@100.68.121.13 -- tmux new -As hermes
 }
 
