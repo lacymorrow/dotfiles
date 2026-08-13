@@ -1,7 +1,3 @@
 .vim/bundle
 .zshrc.local
 .bashrc.local
-
-# Stray 2022 clone of the deprecated gmarik/Vundle.vim, in a directory vim
-# auto-sources. The real one lives in .vim/bundle/Vundle.vim per .vimrc.
-.vim/plugin/Vundle.vim
