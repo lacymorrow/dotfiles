@@ -108,6 +108,23 @@ port = 54334
 statement), while the pinned 2.39.2 applies it fine. Same failure would happen
 with local Docker, but a fresh bootstrap is what exposes it.
 
+**A fresh bootstrap exposes CLI migration bugs.** Nothing to do with porg: the
+containers just happen to start from an empty database, so every migration
+replays for the first time in a long while. Two upstream bugs bite, both in
+[supabase/cli#5139](https://github.com/supabase/cli/issues/5139), closed as not
+planned:
+
+- `syntax error at end of input` (42601): the CLI mis-splits a dollar-quoted
+  function body. LinkIntel hits this on 2.102 and not on its pinned 2.39.2.
+- `CREATE INDEX CONCURRENTLY cannot be executed within a pipeline` (25001): the
+  CLI wraps each migration in a statement pipeline, which rejects CONCURRENTLY.
+  No released version avoids both, so the fix is in the migration: keep the
+  non-concurrent form in the file and apply CONCURRENTLY to prod by hand.
+  MentionDrop already had that convention; one early migration had been missed.
+
+If a migration fails, check it against psql through the tunnel before believing
+the SQL is wrong. psql uses the simple-query protocol and applies both cases fine.
+
 **Log analytics is off.** vector/logflare need the Docker socket bind-mounted
 from the machine running the containers, and the CLI can't resolve a socket path
 for a remote host, so vector never turns healthy and blocks startup. LinkIntel's
