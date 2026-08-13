@@ -20,10 +20,6 @@ source $ZSH/oh-my-zsh.sh
 
 # Core PATH - use $HOME everywhere so this works on any machine
 export PATH=$PATH:/usr/local/bin
-export PATH=$PATH:$HOME/google-cloud-sdk/bin
-export PATH=$PATH:$HOME/.rvm/gems/ruby-2.1.3/bin
-export PATH=$PATH:$HOME/.rvm/gems/ruby-2.1.3@global/bin
-export PATH=$PATH:$HOME/.rvm/rubies/ruby-2.1.3/bin
 export PATH=$PATH:/usr/local/heroku/bin
 export PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin
 export PATH=$PATH:/usr/local/git/bin
@@ -32,15 +28,12 @@ export PATH=$PATH:/usr/local/mysql/bin
 export PATH=$PATH:/usr/local/sbin
 export PATH=$PATH:$HOME/Library/Android/sdk/platform-tools
 export PATH=$PATH:/Applications/gradle-2.2/bin
-export PATH=$PATH:$HOME/.rvm/bin
 export PATH=$PATH:$HOME/.local/bin
 
 source ~/.profile
 source ~/.aliases
 
-export PATH="$PATH:$HOME/.rvm/bin"
 eval $(/usr/libexec/path_helper -s)
-export PATH="/usr/local/opt/ruby/bin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
 
 export PYENV_ROOT="$HOME/.pyenv"
@@ -51,10 +44,6 @@ fi
 
 export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
-
-source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
-source /opt/homebrew/opt/chruby/share/chruby/auto.sh
-chruby ruby-3.1.2
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -79,17 +68,6 @@ export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 
 # Antigravity
 export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
-
-# zoxide
-eval "$(zoxide init zsh)"
-
-# Google Cloud SDK
-if [ -f "$HOME/Downloads/google-cloud-sdk/path.zsh.inc" ]; then
-  source "$HOME/Downloads/google-cloud-sdk/path.zsh.inc"
-fi
-if [ -f "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc" ]; then
-  source "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc"
-fi
 
 # sdkman - must be at the end
 export SDKMAN_DIR="$HOME/.sdkman"
