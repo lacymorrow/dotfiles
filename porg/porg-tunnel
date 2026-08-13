@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+#
+# porg-tunnel: forwards the Supabase port blocks from porg to this machine.
+#
+# The Supabase stacks run as Docker containers on porg, but the Supabase CLI
+# always talks to 127.0.0.1 (it hardcodes the host when applying migrations and
+# seeding). This tunnel makes porg's ports appear on localhost, so both the CLI
+# and every app .env keep working untouched.
+#
+# Usage: porg-tunnel {start|stop|restart|status|foreground|ports}
+
+set -uo pipefail
+
+PORG_HOST="${PORG_HOST:-porg}"
+CONF="${PORG_PROJECTS_CONF:-$HOME/dotfiles/porg/projects.conf}"
+PLIST_LABEL="com.mplacona.porg-tunnel"
+PLIST_PATH="$HOME/Library/LaunchAgents/${PLIST_LABEL}.plist"
+LOG="$HOME/Library/Logs/porg-tunnel.log"
+
+die() { printf 'porg-tunnel: %s\n' "$*" >&2; exit 1; }
+
+# Reads projects.conf and echoes one "<name> <base>" per configured project.
+read_projects() {
+  [ -f "$CONF" ] || die "no project config at $CONF"
+  # shellcheck disable=SC2162
+  while read -r name base _rest; do
+    case "$name" in ''|\#*) continue ;; esac
+    [[ "$base" =~ ^[0-9]+$ ]] || die "bad base port '$base' for project '$name'"
+    printf '%s %s\n' "$name" "$base"
+  done < "$CONF"
+}
+
+# Every port this tunnel is responsible for.
+all_ports() {
+  local name base i
+  while read -r name base; do
+    for i in $(seq 0 9); do printf '%s\n' "$((base + i))"; done
+  done < <(read_projects)
+}
+
+ssh_args() {
+  local port
+  # Each forward targets porg's own loopback, so the containers stay unreachable
+  # from the rest of the network even though the ports are published there.
+  while read -r port; do printf -- '-L\n%s:127.0.0.1:%s\n' "$port" "$port"; done < <(all_ports)
+}
+
+cmd_foreground() {
+  local args=()
+  while IFS= read -r a; do args+=("$a"); done < <(ssh_args)
+  [ ${#args[@]} -gt 0 ] || die "no ports to forward; check $CONF"
+  echo "porg-tunnel: forwarding $(( ${#args[@]} / 2 )) ports from $PORG_HOST"
+  # ControlMaster=no keeps this long-lived connection separate from the
+  # multiplexed one the Docker CLI uses, so restarting either leaves the other
+  # alone. ExitOnForwardFailure makes a busy local port loud rather than silent.
+  exec ssh -N -T \
+    -o ExitOnForwardFailure=yes \
+    -o ServerAliveInterval=30 \
+    -o ServerAliveCountMax=3 \
+    -o ControlMaster=no \
+    -o ControlPath=none \
+    "${args[@]}" "$PORG_HOST"
+}
+
+cmd_start() {
+  [ -f "$PLIST_PATH" ] || die "launch agent not installed; run porg/install.sh"
+  launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH" 2>/dev/null \
+    || launchctl kickstart "gui/$(id -u)/${PLIST_LABEL}"
+  sleep 1
+  cmd_status
+}
+
+cmd_stop() {
+  launchctl bootout "gui/$(id -u)/${PLIST_LABEL}" 2>/dev/null
+  echo "porg-tunnel: stopped"
+}
+
+cmd_restart() {
+  cmd_stop
+  sleep 1
+  launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH" 2>/dev/null
+  sleep 1
+  cmd_status
+}
+
+cmd_status() {
+  local pid port listening=0 total=0
+  pid=$(launchctl list "$PLIST_LABEL" 2>/dev/null | awk -F'= ' '/"PID"/ {gsub(/;/,"",$2); print $2}')
+  if [ -n "$pid" ]; then
+    echo "porg-tunnel: running (pid $pid)"
+  else
+    echo "porg-tunnel: NOT running"
+  fi
+  while read -r port; do
+    total=$((total + 1))
+    nc -z 127.0.0.1 "$port" 2>/dev/null && listening=$((listening + 1))
+  done < <(all_ports)
+  # A local forward accepts connections even when nothing listens on porg's end,
+  # so this counts open listeners, not healthy services. Use `supabase status`
+  # inside a project to check whether that project's stack is actually up.
+  echo "porg-tunnel: $listening/$total local forwards open"
+  echo "porg-tunnel: log $LOG"
+}
+
+cmd_ports() {
+  local name base
+  while read -r name base; do
+    printf '%-14s api=%s db=%s studio=%s mail=%s\n' \
+      "$name" "$((base + 1))" "$((base + 2))" "$((base + 3))" "$((base + 4))"
+  done < <(read_projects)
+}
+
+case "${1:-status}" in
+  start)      cmd_start ;;
+  stop)       cmd_stop ;;
+  restart)    cmd_restart ;;
+  status)     cmd_status ;;
+  foreground) cmd_foreground ;;
+  ports)      cmd_ports ;;
+  *)          die "usage: porg-tunnel {start|stop|restart|status|foreground|ports}" ;;
+esac

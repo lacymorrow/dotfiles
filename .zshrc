@@ -102,5 +102,8 @@ else
   [[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
 fi
 
+# Supabase local stacks run on porg, not on this machine's Docker
+[[ -f ~/dotfiles/porg/porg.zsh ]] && source ~/dotfiles/porg/porg.zsh
+
 # Machine-specific config (git-ignored)
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
