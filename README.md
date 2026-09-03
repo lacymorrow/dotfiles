@@ -31,7 +31,10 @@ You can also run individual scripts directly:
 ./symlink_dotfiles.sh   # Symlink dotfiles to ~/
 ./brew.sh               # Homebrew packages
 ./node.sh               # Node.js via NVM + Bun
-./apply-macos-settings.sh  # macOS system defaults
+./apply-macos-settings.sh  # macOS user defaults (no password needed)
+
+# Include the system-level settings (computer name, login window, etc.):
+DOTFILES_ALLOW_SUDO=true ./apply-macos-settings.sh
 ```
 
 ## What's Included
@@ -39,6 +42,12 @@ You can also run individual scripts directly:
 ### Shell (`home/`)
 
 All files in `home/` are symlinked to `~/` by the setup wizard (or `symlink_dotfiles.sh`).
+
+**Directories are recursed into, not linked wholesale.** `home/.ssh` and `home/.config`
+become *real* directories in `~`, with each file inside symlinked individually. This is
+deliberate: linking `~/.ssh` at the directory level would put every key you later generate
+inside this git repo, and would make every tool that writes to `~/.config` write into the
+repo too.
 
 Works with both **Zsh** (default on macOS) and **Bash** (4+, installed via Homebrew).
 
@@ -56,17 +65,17 @@ Works with both **Zsh** (default on macOS) and **Bash** (4+, installed via Homeb
 | `.npmrc` | npm defaults — uses `${NPM_TOKEN}` env var for auth (see Secrets below) |
 | `.vimrc` | Vim config — line numbers, search, backup/undo, status line |
 | `.tmux.conf` | Tmux config — `Ctrl-a` prefix, vim-style navigation, TPM plugins |
-| `starship.toml` | Starship prompt theme |
+| `.config/starship.toml` | Starship prompt theme (must live in `.config/` — that is where Starship looks) |
 
 ### Scripts
 
 | Script | What it does |
 |--------|-------------|
 | `setup.sh` | **Main entry point** — installs prereqs, launches interactive wizard |
-| `symlink_dotfiles.sh` | Symlinks `home/*` to `~/`, backs up existing files to `~/dotfiles_old` |
+| `symlink_dotfiles.sh` | Symlinks `home/*` to `~/`, backs up existing files to `~/dotfiles_old`. Recurses into directories — see below |
 | `brew.sh` | Installs Homebrew packages |
 | `node.sh` | Installs NVM and Node.js |
-| `apply-macos-settings.sh` | Detailed macOS defaults (parameterized — no hardcoded names) |
+| `apply-macos-settings.sh` | macOS defaults (parameterized). Per-user settings apply with no password; system-level ones are opt-in via `DOTFILES_ALLOW_SUDO=true` |
 
 ### Other
 

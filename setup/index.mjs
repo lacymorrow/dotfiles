@@ -3,9 +3,9 @@
 import * as p from '@clack/prompts';
 import pc from 'picocolors';
 import { execSync, spawn } from 'child_process';
-import { existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync, lstatSync, readlinkSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { homedir, platform } from 'os';
-import { join, basename, resolve } from 'path';
+import { join, resolve } from 'path';
 
 const HOME = homedir();
 const DOTFILES_DIR = resolve(join(import.meta.dirname, '..'));
@@ -26,7 +26,9 @@ function commandExists(cmd) {
 
 function getExistingGitConfig(key) {
   try {
-    return execSync(`git config --global ${key}`, { stdio: 'pipe' }).toString().trim();
+    // --includes is required: without it git ignores [include] and this always
+    // returns empty, since the real values live in ~/.gitconfig.local.
+    return execSync(`git config --global --includes ${key}`, { stdio: 'pipe' }).toString().trim();
   } catch {
     return '';
   }
@@ -143,72 +145,20 @@ async function setupComputerName() {
 }
 
 async function runSymlinks() {
-  const homeDir = join(DOTFILES_DIR, 'home');
-  const backupDir = join(HOME, 'dotfiles_old');
-
-  if (!existsSync(homeDir)) {
-    p.log.warn(`No home/ directory found in ${DOTFILES_DIR}`);
+  // Single source of truth: symlink_dotfiles.sh. It recurses into .config/.ssh
+  // and symlinks leaf files, so ~/.ssh stays a real directory (keys never end
+  // up inside the repo) — don't reimplement that logic here.
+  const script = join(DOTFILES_DIR, 'symlink_dotfiles.sh');
+  if (!existsSync(script)) {
+    p.log.warn('No symlink_dotfiles.sh found');
     return;
   }
 
-  const files = readdirSync(homeDir).filter(f => f.startsWith('.'));
-  let created = 0;
-  let skipped = 0;
-  let backedUp = 0;
-
-  for (const file of files) {
-    const source = join(homeDir, file);
-    const target = join(HOME, file);
-
-    // Check if target exists (lstatSync doesn't follow symlinks, but throws if nothing exists)
-    let targetExists = false;
-    let targetStat = null;
-    try {
-      targetStat = lstatSync(target);
-      targetExists = true;
-    } catch {
-      // Target doesn't exist — will create below
-    }
-
-    // Check if symlink already points to the correct target
-    if (targetExists && targetStat.isSymbolicLink()) {
-      try {
-        const linkTarget = readlinkSync(target);
-        if (resolve(linkTarget) === resolve(source)) {
-          skipped++;
-          continue;
-        }
-      } catch {
-        // Can't read link — will back up below
-      }
-    }
-
-    // Back up existing file/symlink
-    if (targetExists) {
-      mkdirSync(backupDir, { recursive: true });
-      execSync(`mv "${target}" "${backupDir}/"`, { stdio: 'pipe' });
-      backedUp++;
-    }
-
-    // Create symlink
-    try {
-      execSync(`ln -s "${source}" "${target}"`, { stdio: 'pipe' });
-      created++;
-    } catch (e) {
-      p.log.warn(`Failed to link ${file}: ${e.message}`);
-    }
-  }
-
-  const parts = [];
-  if (created > 0) parts.push(`${created} created`);
-  if (skipped > 0) parts.push(`${skipped} already correct`);
-  if (backedUp > 0) parts.push(`${backedUp} backed up to ~/dotfiles_old`);
-
-  if (parts.length > 0) {
-    p.log.success(`Symlinks: ${parts.join(', ')}`);
-  } else {
-    p.log.info('No dotfiles found to link');
-  }
+  execSync(`bash "${script}"`, {
+    stdio: 'inherit',
+    cwd: DOTFILES_DIR,
+    env: { ...process.env, DIR: DOTFILES_DIR },
+  });
 }
 
 async function runBrew() {
@@ -356,14 +306,12 @@ async function main() {
   // ── Execute Selected Modules ──────────────────────────────────────────
 
   if (modules.includes('symlinks')) {
-    const s = p.spinner();
-    s.start('Symlinking dotfiles');
+    p.log.step('Symlinking dotfiles...');
     try {
       await runSymlinks();
-      s.stop('Dotfiles symlinked');
+      p.log.success('Dotfiles symlinked');
     } catch (e) {
-      s.stop('Symlinks failed');
-      p.log.error(e.message);
+      p.log.error(`Symlinks failed: ${e.message}`);
     }
   }
 

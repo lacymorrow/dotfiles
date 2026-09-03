@@ -62,6 +62,8 @@ if command -v starship &>/dev/null; then
   eval "$(starship init zsh)"
 fi
 
-# Lacy Shell
-source /Users/lacy/.lacy/lacy.plugin.zsh
-export PATH="/Users/lacy/.lacy/bin:$PATH"
+# Lacy Shell (optional — skipped cleanly if not installed)
+if [ -d "$HOME/.lacy" ]; then
+  [ -f "$HOME/.lacy/lacy.plugin.zsh" ] && source "$HOME/.lacy/lacy.plugin.zsh"
+  [ -d "$HOME/.lacy/bin" ] && export PATH="$HOME/.lacy/bin:$PATH"
+fi
