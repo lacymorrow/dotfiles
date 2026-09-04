@@ -1,3 +1,4 @@
+case "$0" in sh|-sh|*/sh) return 0 ;; esac  # paperclip/ssh: plain sh sources this; bail before bash/zsh-only syntax
 # Zsh login shell — shared setup + zsh-specific plugins/completions
 
 # Shared login setup (PATH, tools, dotfiles)

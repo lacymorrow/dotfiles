@@ -54,7 +54,8 @@ brew "xz"                 # decompressing .img.xz OS images
 # Cask apps                                                                   #
 ###############################################################################
 cask "visual-studio-code"
-cask "angry-ip-scanner"
+# cask "angry-ip-scanner"   # DISABLED upstream 2026-09-01: fails macOS Gatekeeper.
+#                          # LAN scanning alternative: `brew install nmap`
 cask "cursor"
 cask "cyberduck"
 cask "docker-desktop"     # renamed upstream — the old "docker" cask is gone
@@ -68,7 +69,8 @@ cask "ngrok"
 cask "slack"
 cask "spotify"
 cask "transmission"
-cask "unetbootin"
+# cask "unetbootin"        # DISABLED upstream 2026-09-01: fails macOS Gatekeeper.
+#                          # balenaetcher + raspberry-pi-imager below cover USB/SD imaging
 # cask "vagrant"
 cask "vlc"
 cask "virtualbox"
@@ -81,7 +83,8 @@ cask "zoom"
 cask "raspberry-pi-imager"    # flash Pi OS to SD/USB
 cask "balenaetcher"           # general-purpose image flasher
 cask "arduino-ide"
-cask "betaflight-configurator" # FPV flight controller config
+cask "betaflight-configurator" # FPV flight controller config (deprecated upstream:
+                               # discontinued, still installs — pin/replace when it breaks)
 cask "tailscale-app"          # home/.ssh/config reaches "otto" over a 100.x Tailscale IP
 # cask "qgroundcontrol"       # uncomment for MAVLink/ArduPilot ground station
 # cask "saleae-logic"         # uncomment if you use a Saleae logic analyzer
@@ -92,7 +95,7 @@ cask "tailscale-app"          # home/.ssh/config reaches "otto" over a 100.x Tai
 cask "qlcolorcode"
 cask "qlstephen"
 cask "qlmarkdown"
-cask "quicklook-json"
+# cask "quicklook-json"    # DISABLED upstream 2025-12-23: no longer meets cask criteria
 cask "qlprettypatch"
 cask "quicklook-csv"
 cask "webpquicklook"
