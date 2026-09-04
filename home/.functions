@@ -7,6 +7,26 @@ timezsh() {
   for i in $(seq 1 10); do /usr/bin/time $shell -i -c exit; done
 }
 
+# Disk usage, human-readable, smallest first.
+# This is a function rather than `alias du="du -sh * | sort -h"`, which silently
+# dropped its arguments: `du ~/Downloads` expanded to `du -sh * | sort -h
+# ~/Downloads`, so it sized the *current* directory and handed the path to sort
+# as an input file.
+function du() {
+	# Explicit flags mean the caller wants the real du.
+	case "${1:-}" in
+		-*) command du "$@"; return ;;
+	esac
+
+	if [ "$#" -gt 0 ]; then
+		command du -sh -- "$@" | sort -h
+	else
+		# find, not a bare *: an unmatched glob is a hard error under zsh's
+		# nomatch, and * would also hide dotted entries like .git and .venv.
+		find . -mindepth 1 -maxdepth 1 -exec du -sh {} + 2>/dev/null | sort -h
+	fi
+}
+
 # Create a new directory and enter it
 function mkd() {
 	mkdir -p "$@" && cd "$_";

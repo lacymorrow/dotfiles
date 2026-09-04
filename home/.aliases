@@ -8,7 +8,6 @@ alias speedtest='curl -o /dev/null http://speedtest.wdc01.softlayer.com/download
 # every `cat` in the shell (and anything sourced afterwards) on a fresh
 # machine until `brew bundle` has run.
 command -v bat >/dev/null 2>&1 && alias cat="bat"
-alias du="du -sh * | sort -h"
 alias ll="ls -FGlAhp"
 
 # Docker
