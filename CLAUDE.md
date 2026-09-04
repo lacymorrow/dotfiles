@@ -50,12 +50,14 @@ curl -fsSL https://raw.githubusercontent.com/lacymorrow/dotfiles/main/setup.sh |
 │   ├── .docker_aliases     # Docker aliases/functions
 │   ├── .vimrc              # Vim config
 │   ├── .tmux.conf          # Tmux config (Ctrl-a prefix)
-│   ├── starship.toml       # Starship prompt theme
+│   ├── .config/starship.toml  # Starship prompt theme (Starship only reads it from .config/)
 │   └── ...                 # .npmrc, .curlrc, .inputrc, .editorconfig, etc.
-├── symlink_dotfiles.sh     # Idempotent symlinker (skips correct links, backs up conflicts)
+├── symlink_dotfiles.sh     # Idempotent symlinker. Recurses into directories so ~/.ssh
+│                           # and ~/.config stay real dirs (keys/state never land in the repo)
 ├── brew.sh                 # Homebrew install + brew bundle
 ├── node.sh                 # NVM + Node + Bun + global packages
-├── apply-macos-settings.sh # macOS defaults (reads DOTFILES_COMPUTER_NAME, DOTFILES_WORK_MACHINE env vars)
+├── apply-macos-settings.sh # macOS defaults (reads DOTFILES_COMPUTER_NAME, DOTFILES_WORK_MACHINE,
+│                           # DOTFILES_ALLOW_SUDO env vars)
 ├── Brewfile                # Declarative Homebrew dependencies
 ├── settings/               # App-specific settings (BetterSnapTool)
 └── .ssh/                   # SSH config template
@@ -67,7 +69,9 @@ curl -fsSL https://raw.githubusercontent.com/lacymorrow/dotfiles/main/setup.sh |
 - **Shell:** Zsh and Bash supported via shared `.shell_common`. Starship prompt. No Oh My Zsh.
 - **Package manager:** Homebrew for everything (CLI + casks + App Store via `mas`).
 - **Nix files exist** (`flake.nix`, `darwin-configuration.nix`, `home.nix`) as an experimental alternative but are not part of the main setup flow.
-- **`apply-macos-settings.sh` is parameterized.** Pass computer name and work machine flag via env vars (`DOTFILES_COMPUTER_NAME`, `DOTFILES_WORK_MACHINE`), positional args, or it prompts interactively with sane defaults.
+- **`apply-macos-settings.sh` is parameterized.** Pass computer name and work machine flag via env vars (`DOTFILES_COMPUTER_NAME`, `DOTFILES_WORK_MACHINE`), positional args, or it prompts interactively with sane defaults. It only prompts when attached to a TTY, so unattended runs don't hang.
+- **Privileged macOS settings are opt-in.** Everything routes through a `sudo_do` helper; without `DOTFILES_ALLOW_SUDO=true` those lines print as skipped instead of running. This lets an agent apply the per-user settings unattended.
+- **The setup wizard does not reimplement symlinking.** `setup/index.mjs` shells out to `symlink_dotfiles.sh` so there is one source of truth.
 
 ## Dotfile Loading Order (in .shell_common)
 

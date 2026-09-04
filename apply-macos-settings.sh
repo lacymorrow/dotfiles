@@ -11,38 +11,63 @@ name="${DOTFILES_COMPUTER_NAME:-${1:-}}"
 workmachine="${DOTFILES_WORK_MACHINE:-${2:-}}"
 if [ -z "$name" ]; then
     name="$(scutil --get ComputerName 2>/dev/null || hostname -s)"
-    read -rp "Computer name [$name]: " input
-    name="${input:-$name}"
+    # Only prompt when attached to a terminal, so unattended runs don't hang.
+    if [ -t 0 ]; then
+        read -rp "Computer name [$name]: " input
+        name="${input:-$name}"
+    fi
 fi
 if [ -z "$workmachine" ]; then
-    read -rp "Work machine? (true/false) [false]: " input
-    workmachine="${input:-false}"
+    workmachine="false"
+    if [ -t 0 ]; then
+        read -rp "Work machine? (true/false) [false]: " input
+        workmachine="${input:-false}"
+    fi
 fi
 
 # Close any open System Preferences panes, to prevent them from overriding
 # settings we’re about to change
 osascript -e 'tell application "System Preferences" to quit'
 
-# Ask for the administrator password upfront
-sudo -v
+# Privileged settings are opt-in. By default this script applies only the
+# per-user `defaults write` settings and needs no password, so it can run
+# unattended (e.g. from an agent). Set DOTFILES_ALLOW_SUDO=true to also apply
+# the system-level settings.
+DOTFILES_ALLOW_SUDO="${DOTFILES_ALLOW_SUDO:-false}"
 
-# Keep-alive: update existing `sudo` time stamp until `.osx` has finished
-while true; do
-	sudo -n true
-	sleep 60
-	kill -0 "$$" || exit
-done 2>/dev/null &
+# Run a privileged command, or report it as skipped when sudo is not enabled.
+sudo_do() {
+	if [ "$DOTFILES_ALLOW_SUDO" = "true" ]; then
+		command sudo "$@"
+	else
+		echo "  [skipped, needs sudo] $*"
+	fi
+}
+
+if [ "$DOTFILES_ALLOW_SUDO" = "true" ]; then
+	# Ask for the administrator password upfront
+	command sudo -v
+
+	# Keep-alive: refresh the sudo timestamp until this script has finished
+	while true; do
+		command sudo -n true
+		sleep 60
+		kill -0 "$$" || exit
+	done 2>/dev/null &
+else
+	echo "  Skipping system-level settings (set DOTFILES_ALLOW_SUDO=true to apply them)."
+fi
 
 ###############################################################################
 # Universal Access                                                      #
 ###############################################################################
 
 # Zoom: Use scroll gesture with the Ctrl (^) modifier key to zoom
-sudo defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
-sudo defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
+sudo_do defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+sudo_do defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
 
 # Follow the keyboard focus while zoomed in
-sudo defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+sudo_do defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
 
 ###############################################################################
 # SSD-specific tweaks                                                         #
@@ -67,10 +92,10 @@ sudo defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool tr
 
 # Set computer name (as done via System Preferences → Sharing)
 
-sudo scutil --set ComputerName "$name"
-sudo scutil --set HostName "$name"
-sudo scutil --set LocalHostName "$name"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$name"
+sudo_do scutil --set ComputerName "$name"
+sudo_do scutil --set HostName "$name"
+sudo_do scutil --set LocalHostName "$name"
+sudo_do defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$name"
 
 # Set sidebar icon size to medium
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 1
@@ -138,7 +163,7 @@ defaults write com.apple.helpviewer DevMode -bool true
 
 # Reveal IP address, hostname, OS version, etc. when clicking the clock
 # in the login window
-sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
+sudo_do defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
 
 # Disable Notification Center and remove the menu bar icon
 # launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
@@ -220,7 +245,7 @@ defaults write NSGlobalDomain AppleMeasurementUnits -string "Inches"
 defaults write NSGlobalDomain AppleMetricUnits -bool true
 
 # Show language menu in the top right corner of the boot screen
-sudo defaults write /Library/Preferences/com.apple.loginwindow showInputMenu -bool true
+sudo_do defaults write /Library/Preferences/com.apple.loginwindow showInputMenu -bool true
 
 # Stop "Apple Music" app from responding to the keyboard media keys and opening
 launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist 2>/dev/null
@@ -275,7 +300,7 @@ defaults write com.apple.screencapture disable-shadow -bool true
 defaults write NSGlobalDomain AppleFontSmoothing -int 1
 
 # Enable HiDPI display modes (requires restart)
-sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+sudo_do defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
 
 ###############################################################################
 # Finder                                                                      #
@@ -381,7 +406,7 @@ chflags nohidden ~/Library
 # chflags nohidden ~/Library && xattr -d com.apple.FinderInfo ~/Library
 
 # Show the /Volumes folder
-sudo chflags nohidden /Volumes
+sudo_do chflags nohidden /Volumes
 
 # Remove Dropbox’s green checkmark icons in Finder
 # file=/Applications/Dropbox.app/Contents/Resources/emblem-dropbox-uptodate.icns
@@ -467,9 +492,12 @@ defaults write com.apple.dock showLaunchpadGestureEnabled -int 0
 # Reset Launchpad, but keep the desktop wallpaper intact
 find "${HOME}/Library/Application Support/Dock" -name "*-*.db" -maxdepth 1 -delete
 
-# Add iOS & Watch Simulator to Launchpad
-sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app" "/Applications/Simulator.app"
-sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator (Watch).app" "/Applications/Simulator (Watch).app"
+# Add iOS & Watch Simulator to Launchpad (only if Xcode is actually installed,
+# otherwise these are dangling symlinks in /Applications)
+if [ -d "/Applications/Xcode.app" ]; then
+	sudo_do ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app" "/Applications/Simulator.app"
+	sudo_do ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator (Watch).app" "/Applications/Simulator (Watch).app"
+fi
 
 # Add a spacer to the left side of the Dock (where the applications are)
 defaults write com.apple.dock persistent-apps -array-add '{tile-data={}; tile-type="spacer-tile";}'
@@ -507,12 +535,15 @@ defaults write com.apple.dock wvous-br-modifier -int 0
 ###############################################################################
 
 # # Hide Spotlight tray-icon (and subsequent helper)
-sudo chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
+# REMOVED: `chmod 600` on the Spotlight Search binary.
+# It is SIP-protected on modern macOS (so it just errors), and the intent —
+# breaking a system binary by removing its exec bit — is not something worth
+# doing to get rid of a menu bar icon.
 
 # # Disable Spotlight indexing for any volume that gets mounted and has not yet
 # # been indexed before.
 # # Use `sudo mdutil -i off "/Volumes/foo"` to stop indexing any volume.
-sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
+sudo_do defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
 
 # # Change indexing order and disable some search results
 # # Yosemite-specific search results (remove them if you are using macOS 10.9 or older):
@@ -549,10 +580,12 @@ sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Vol
 killall mds >/dev/null 2>&1
 
 # Make sure indexing is enabled for the main volume
-sudo mdutil -i on / >/dev/null
+sudo_do mdutil -i on / >/dev/null
 
 # Rebuild the index from scratch
-sudo mdutil -E / >/dev/null
+# REMOVED: `mdutil -E /` erases and rebuilds the entire Spotlight index,
+# which pins the CPU for hours on a fresh machine for no real benefit.
+# Run it by hand if the index is genuinely corrupt.
 
 ###############################################################################
 # Terminal & iTerm 2                                                          #

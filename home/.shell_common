@@ -24,23 +24,31 @@ unset file
 # NVM setup
 export NVM_DIR="$HOME/.nvm"
 if [ -s "$NVM_DIR/nvm.sh" ]; then
-    # Fast path: add NVM default node to PATH before loading NVM
+    # Fast path: put the default node on PATH before the (slow) nvm.sh load.
     if [ -f "$NVM_DIR/alias/default" ]; then
-        __nvm_default_version=$(cat "$NVM_DIR/alias/default")
-        if [ -d "$NVM_DIR/versions/node/v$__nvm_default_version" ]; then
-            export PATH="$NVM_DIR/versions/node/v$__nvm_default_version/bin:$PATH"
-        elif [ -d "$NVM_DIR/versions/node/$__nvm_default_version" ]; then
-            export PATH="$NVM_DIR/versions/node/$__nvm_default_version/bin:$PATH"
-        elif [ "$__nvm_default_version" != "system" ]; then
-            # Handle major version aliases (e.g. "24" -> "v24.x.x")
-            for __nvm_dir in "$NVM_DIR/versions/node/v${__nvm_default_version}"*; do
-                if [ -d "$__nvm_dir" ]; then
-                    export PATH="$__nvm_dir/bin:$PATH"
-                    break
-                fi
-            done
+        # `command cat`, not `cat`: .aliases is sourced above and sets
+        # `alias cat="bat"`, which zsh expands here too. Without this the
+        # fast path silently breaks on any machine lacking bat.
+        __nvm_default=$(command cat "$NVM_DIR/alias/default" 2>/dev/null)
+
+        if [ -n "$__nvm_default" ] && [ "$__nvm_default" != "system" ]; then
+            if [ -d "$NVM_DIR/versions/node/v$__nvm_default" ]; then
+                export PATH="$NVM_DIR/versions/node/v$__nvm_default/bin:$PATH"
+            elif [ -d "$NVM_DIR/versions/node/$__nvm_default" ]; then
+                export PATH="$NVM_DIR/versions/node/$__nvm_default/bin:$PATH"
+            else
+                # Partial aliases: "24" -> v24.x.x. Keyword aliases ("node",
+                # "stable", "lts/*") match nothing here and correctly fall
+                # through to the full nvm.sh load below.
+                #
+                # `find`, not a glob: an unmatched glob is a hard error under
+                # zsh's default nomatch, which printed on every shell start.
+                __nvm_match=$(find "$NVM_DIR/versions/node" -maxdepth 1 -type d \
+                    -name "v${__nvm_default}.*" 2>/dev/null | sort | tail -1)
+                [ -n "$__nvm_match" ] && export PATH="$__nvm_match/bin:$PATH"
+            fi
         fi
-        unset __nvm_default_version __nvm_dir
+        unset __nvm_default __nvm_match
     fi
 
     # Load NVM
