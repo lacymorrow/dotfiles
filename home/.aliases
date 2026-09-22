@@ -157,20 +157,26 @@ alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && kill
 alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
 
 # Hide/show desktop widgets (macOS Sonoma and later).
-# WindowManager picks these up live, so no killall is needed.
-alias hidewidgets="defaults write com.apple.WindowManager StandardHideWidgets -bool true"
-alias showwidgets="defaults write com.apple.WindowManager StandardHideWidgets -bool false"
+# Two separate keys: Standard covers the normal desktop, StageManager covers
+# the desktop while Stage Manager is on. WindowManager picks both up live,
+# so no killall is needed.
+_widgets() {
+  defaults write com.apple.WindowManager StandardHideWidgets -bool "$1"
+  defaults write com.apple.WindowManager StageManagerHideWidgets -bool "$1"
+}
+hidewidgets() { _widgets true; }
+showwidgets() { _widgets false; }
 
 # Hide/show all desktop icons *and* widgets (useful when presenting).
 # Finder does need the killall; WindowManager doesn't.
 hidedesktop() {
   defaults write com.apple.finder CreateDesktop -bool false
-  defaults write com.apple.WindowManager StandardHideWidgets -bool true
+  _widgets true
   killall Finder
 }
 showdesktop() {
   defaults write com.apple.finder CreateDesktop -bool true
-  defaults write com.apple.WindowManager StandardHideWidgets -bool false
+  _widgets false
   killall Finder
 }
 
