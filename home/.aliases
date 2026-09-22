@@ -129,9 +129,21 @@ alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo 
 alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
 alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
 
-# Hide/show all desktop icons (useful when presenting)
-alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
-alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+# Hide/show desktop widgets (macOS Sonoma and later)
+alias hidewidgets="defaults write com.apple.WindowManager StandardHideWidgets -bool true && killall WindowManager"
+alias showwidgets="defaults write com.apple.WindowManager StandardHideWidgets -bool false && killall WindowManager"
+
+# Hide/show all desktop icons *and* widgets (useful when presenting)
+hidedesktop() {
+  defaults write com.apple.finder CreateDesktop -bool false
+  defaults write com.apple.WindowManager StandardHideWidgets -bool true
+  killall Finder WindowManager
+}
+showdesktop() {
+  defaults write com.apple.finder CreateDesktop -bool true
+  defaults write com.apple.WindowManager StandardHideWidgets -bool false
+  killall Finder WindowManager
+}
 
 # URL-encode strings
 alias urlencode='python3 -c "import sys, urllib.parse; print(urllib.parse.quote_plus(sys.argv[1]))"'
