@@ -23,10 +23,6 @@ fi
 # Deno completions
 fpath=(~/.zsh $fpath)
 
-# Initialize completions with caching (rebuild once per day)
-autoload -Uz compinit
-if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
-    compinit -u
-else
-    compinit -C -u
-fi
+# Fleet rule 13: email send gate must shadow the real gog/himalaya.
+# Keep this LAST so nothing else can get in front of it on PATH.
+[ -d "$HOME/.openclaw/guards/bin" ] && export PATH="$HOME/.openclaw/guards/bin:$PATH"

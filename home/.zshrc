@@ -6,6 +6,15 @@ if [[ ! -o interactive ]]; then
   return
 fi
 
+# Initialize completions, rebuilding the cache at most once a day.
+# -u skips the prompt about Homebrew's group-writable completion dirs.
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+  compinit -u
+else
+  compinit -C -u
+fi
+
 # Shell behavior
 setopt AUTO_CD              # Change to directory just by typing directory name
 setopt GLOB_STAR_SHORT      # Enable ** for recursive globbing
@@ -22,6 +31,10 @@ setopt EXTENDED_HISTORY      # Write timestamp to history
 setopt CORRECT              # Enable command correction
 setopt COMPLETE_IN_WORD     # Complete from both ends of word
 setopt ALWAYS_TO_END        # Move cursor to end after completion
+
+# Use bash-style word boundaries so Option+Backspace matches macOS behavior
+autoload -U select-word-style
+select-word-style bash
 
 # History
 HISTFILE=~/.zsh_history
@@ -61,6 +74,10 @@ fi
 if command -v starship &>/dev/null; then
   eval "$(starship init zsh)"
 fi
+
+# OpenClaw completions
+[ -f "$HOME/.openclaw/completions/openclaw.zsh" ] && \
+  source "$HOME/.openclaw/completions/openclaw.zsh"
 
 # Lacy Shell (optional — skipped cleanly if not installed)
 if [ -d "$HOME/.lacy" ]; then
