@@ -129,20 +129,22 @@ alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo 
 alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
 alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
 
-# Hide/show desktop widgets (macOS Sonoma and later)
-alias hidewidgets="defaults write com.apple.WindowManager StandardHideWidgets -bool true && killall WindowManager"
-alias showwidgets="defaults write com.apple.WindowManager StandardHideWidgets -bool false && killall WindowManager"
+# Hide/show desktop widgets (macOS Sonoma and later).
+# WindowManager picks these up live, so no killall is needed.
+alias hidewidgets="defaults write com.apple.WindowManager StandardHideWidgets -bool true"
+alias showwidgets="defaults write com.apple.WindowManager StandardHideWidgets -bool false"
 
-# Hide/show all desktop icons *and* widgets (useful when presenting)
+# Hide/show all desktop icons *and* widgets (useful when presenting).
+# Finder does need the killall; WindowManager doesn't.
 hidedesktop() {
   defaults write com.apple.finder CreateDesktop -bool false
   defaults write com.apple.WindowManager StandardHideWidgets -bool true
-  killall Finder WindowManager
+  killall Finder
 }
 showdesktop() {
   defaults write com.apple.finder CreateDesktop -bool true
   defaults write com.apple.WindowManager StandardHideWidgets -bool false
-  killall Finder WindowManager
+  killall Finder
 }
 
 # URL-encode strings
