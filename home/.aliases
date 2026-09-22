@@ -120,6 +120,33 @@ alias c="tr -d '\n' | pbcopy"
 # Recursively delete `.DS_Store` files
 alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
 
+# Route `rm` (incl. `rm -rf`) through the `trash` CLI so deletions are
+# recoverable from the macOS Trash. `trash` doesn't accept rm-style flags
+# (-r, -f, -i, -v), so they're stripped before forwarding the paths.
+# Only defined when `trash` is installed, so `rm` still works on a machine
+# where `brew bundle` hasn't run yet.
+if command -v trash >/dev/null 2>&1; then
+  rm() {
+    local args=()
+    local rest=0
+    local arg
+    for arg in "$@"; do
+      if [ "$rest" -eq 1 ]; then
+        args+=("$arg")
+      elif [ "$arg" = "--" ]; then
+        rest=1
+      else
+        case "$arg" in
+          -*) ;;
+          *) args+=("$arg") ;;
+        esac
+      fi
+    done
+    [ "${#args[@]}" -eq 0 ] && return 0
+    command trash "${args[@]}"
+  }
+fi
+
 # Empty the Trash on all mounted volumes and the main HDD.
 # Also, clear Apple's System Logs to improve shell startup speed.
 # Finally, clear download history from quarantine. https://mths.be/bum
