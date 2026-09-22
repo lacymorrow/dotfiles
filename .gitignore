@@ -94,3 +94,17 @@ setup/node_modules/
 
 # next.js build output
 .next
+
+# Live secrets that live here because of directory symlinks #
+#############################################################
+# ~/.ssh and ~/.config are symlinks to home/.ssh and home/.config, so the real
+# private keys, gcloud/gh/figma/neonctl credentials and app state physically sit
+# in this working tree. Ignore both trees and re-include only what is tracked,
+# so a stray `git add -A` cannot publish a key to a public repo.
+home/.ssh/**
+!home/.ssh/config
+
+home/.config/**
+!home/.config/starship.toml
+!home/.config/ghostty/
+!home/.config/ghostty/config
