@@ -125,7 +125,16 @@ alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
 # (-r, -f, -i, -v), so they're stripped before forwarding the paths.
 # Only defined when `trash` is installed, so `rm` still works on a machine
 # where `brew bundle` hasn't run yet.
-if command -v trash >/dev/null 2>&1; then
+#
+# Skipped inside Claude Code ($CLAUDECODE), because an agent process has no
+# Full Disk Access: `~/.Trash` is TCC-protected, so it can neither list nor
+# empty what it put there. Routing an agent's `rm` through `trash` turns every
+# cleanup into a 0-byte reclaim and leaks disk that nothing on the box can
+# sweep (9.5 GB of `node_modules` moved `df` by 0.00 GB, LAC-6233), and `trash`
+# exits 5 on a path that is already gone, which breaks `&&` chains that `rm -f`
+# would have survived. Agent shells get the real `rm`. Set TRASH_RM=1 to force
+# the shim back on inside a session.
+if command -v trash >/dev/null 2>&1 && { [ -z "$CLAUDECODE" ] || [ -n "$TRASH_RM" ]; }; then
   rm() {
     local args=()
     local rest=0
