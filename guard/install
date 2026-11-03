@@ -13,6 +13,11 @@
 # owns the files.
 set -eu
 
+# set -f: the hook-name loops below deliberately rely on word splitting of a
+# newline-separated list, which also exposes them to pathname expansion. A `*` in
+# hooks.txt would otherwise expand against the cwd. Globbing is never wanted here.
+set -f
+
 src=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 dest=${GUARD_DEST:-$HOME/.local/share/git-identity-guard}
 hooks=$dest/hooks
@@ -37,7 +42,9 @@ for n in $names; do
       echo "guard/install: hooks.txt names $n, which is a do-the-work hook; refusing." >&2
       exit 1
       ;;
-    */*|.|..|'')
+    *[!a-z0-9-]*|*/*|.|..|'')
+      # Lowercase, digits and dashes cover every hook name git defines. Anything else
+      # is either a path, a glob character, or whitespace that survived the split.
       echo "guard/install: hooks.txt names an invalid hook '$n'; refusing." >&2
       exit 1
       ;;
@@ -53,15 +60,18 @@ done
 
 # Prune first, then create: an install has to be able to REMOVE a hook name, which
 # is the only way a host recovers from a do-the-work symlink someone added by hand.
-for existing in "$hooks"/* "$hooks"/.??*; do
-  [ -e "$existing" ] || [ -L "$existing" ] || continue
-  base=${existing##*/}
-  keep=no
-  for n in $names; do
-    [ "$base" = "$n" ] && { keep=yes; break; }
-  done
-  [ "$keep" = yes ] || rm -f -- "$existing"
+#
+# Built as find arguments rather than a shell glob. `set -f` above disables pathname
+# expansion, so the previous `for existing in "$hooks"/* "$hooks"/.??*` left both
+# patterns literal and pruned NOTHING while still exiting 0. Measured on zero before
+# this fix (LAC-6544): a planted `hooks/rogue` and `hooks/.hidden-rogue` both survived
+# an install that reported success, and only `guard/verify` caught it. find also covers
+# dotfiles without a second pattern and never word-splits a filename.
+set -- "$hooks" -mindepth 1 -maxdepth 1
+for n in $names; do
+  set -- "$@" ! -name "$n"
 done
+find "$@" -exec rm -f -- {} +
 
 for n in $names; do
   ln -sfn ../dispatch "$hooks/$n"

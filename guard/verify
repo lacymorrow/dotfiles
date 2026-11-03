@@ -25,6 +25,11 @@
 # else is sufficient. For behaviour under the relapse state, run guard/selftest.
 set -u
 
+# set -f: the hook-name loops below deliberately rely on word splitting of a
+# newline-separated list, which also exposes them to pathname expansion. A `*` in
+# hooks.txt would otherwise expand against the cwd. Globbing is never wanted here.
+set -f
+
 src=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 dest=${GUARD_DEST:-$HOME/.local/share/git-identity-guard}
 hooks=$dest/hooks
