@@ -2,7 +2,7 @@
 
 import * as p from '@clack/prompts';
 import pc from 'picocolors';
-import { execSync, spawn } from 'child_process';
+import { execFileSync, execSync, spawn } from 'child_process';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { homedir, platform } from 'os';
 import { join, resolve } from 'path';
@@ -122,10 +122,18 @@ async function setupGitConfig() {
   // check at all (LACA-2991, 3 such repos found there). Do not "simplify" this comment
   // into "the config hook does not cover hooksPath repos" -- that is false on zero, and
   // the honest statement is that coverage is a per-host function of the git version.
+  //
+  // The files themselves are tracked in guard/ and installed by guard/install, which
+  // this function runs. Before LAC-6530 they were hand-placed unversioned state in
+  // ~/.local/share on each host, and the gate here was existsSync(check && hooks): it
+  // preserved wiring it never installed, so a host that had never been hand-seeded was
+  // silently rule-18-unguarded. guardWired now means "my own install succeeded", which
+  // is why that branch cannot be reached any more on a host that runs setup.
   const guardDir = join(HOME, '.local/share/git-identity-guard');
   const guardCheck = join(guardDir, 'check');
   const guardHooks = join(guardDir, 'hooks');
-  const guardWired = existsSync(guardCheck) && existsSync(guardHooks);
+  const guardInstall = installIdentityGuard();
+  const guardWired = guardInstall.ok;
   const guard = guardWired
     ? `[hook "identity-guard"]
 \tcommand = ${guardCheck}
@@ -143,20 +151,42 @@ ${guard}`;
 
   writeFileSync(localFile, content);
   if (guardWired) {
-    p.log.success(`Wrote ${pc.dim('~/.gitconfig.local')} (identity guard wired, fleet rule 18)`);
+    p.log.success(
+      `Wrote ${pc.dim('~/.gitconfig.local')} (identity guard installed from ${pc.dim('guard/')} and wired, fleet rule 18)`
+    );
   } else {
-    // This branch preserves wiring it never installs, so say so out loud: the only other
-    // tell was a missing parenthetical on a success line. The guard itself is unversioned
-    // state in ~/.local/share on every host that has it, and installing it is unowned
-    // work (LAC-6527). Until that is fixed, a host that reaches this branch commits with
-    // fleet rule 18 unenforced.
+    // Reaching this means guard/install itself failed, which is a real error and not
+    // the old "nobody ever hand-seeded this host" case. Say what failed; a host that
+    // commits from here has fleet rule 18 unenforced.
     p.log.warn(
       `Wrote ${pc.dim('~/.gitconfig.local')} ${pc.yellow('without an identity guard')}: fleet rule 18 is NOT enforced on this machine.\n` +
-        `  Install ${pc.dim('~/.local/share/git-identity-guard/{check,hooks}')} (copy it from a host that has it), then re-run setup to wire it.`
+        `  ${guardInstall.error}\n` +
+        `  Fix that, then run ${pc.dim('guard/verify')} to confirm the guard matches this repo.`
     );
   }
 
   return { name, email };
+}
+
+// Install fleet rule 18's identity guard from guard/ into ~/.local/share. The copy,
+// chmod and symlink regeneration live in guard/install rather than here so a host can
+// repair the guard without running the whole interactive wizard, and so guard/verify
+// has one owner to point at. Returns the rc as a boolean plus the installer's own
+// message, which is the only useful thing to print on failure.
+function installIdentityGuard() {
+  const installer = join(DOTFILES_DIR, 'guard', 'install');
+  if (!existsSync(installer)) {
+    return { ok: false, error: `Missing ${installer}; this checkout predates guard/ (LAC-6530).` };
+  }
+  try {
+    // execFileSync, not execSync: no shell, so a $ or a space in the repo path
+    // cannot be interpolated or word-split.
+    execFileSync(installer, { stdio: 'pipe' });
+    return { ok: true, error: null };
+  } catch (err) {
+    const detail = (err.stderr?.toString() || err.stdout?.toString() || err.message || '').trim();
+    return { ok: false, error: `guard/install failed: ${detail.split('\n').pop()}` };
+  }
 }
 
 async function setupComputerName() {

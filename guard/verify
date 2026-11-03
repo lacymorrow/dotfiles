@@ -1,0 +1,106 @@
+#!/bin/sh
+# Answer "is THIS host's identity guard the one in this repo, and can it fire?"
+#
+# Exit codes:
+#   0  installed, wired, and the config-hook arm is live (full coverage)
+#   2  installed and wired, but git is too old for the config-hook arm, so any repo
+#      that sets its own core.hooksPath gets NO identity check (measured: graphite,
+#      git 2.50.1, 3 such repos, LACA-2991)
+#   1  not guarded: a file is missing, drifted, or the wiring is absent
+#
+# What this probe deliberately does NOT do, each one measured to read green on an
+# unguarded host (LAC-6530, LAC-6538, Zero's fixture arm 5 on graphite):
+#
+#   * grep ~/.gitconfig.local for [hook "identity-guard"]. setup writes that block
+#     whether or not the reader exists, so it is satisfied on a host with no guard
+#     installed at all.
+#   * test -x or "the symlink resolves" on .git/hooks/pre-commit. After a
+#     package.json postinstall re-sets core.hooksPath=.githooks, the symlink STILL
+#     resolves and is STILL executable while the guard is no longer reached.
+#   * read the version string alone. The honest question is whether this git has a
+#     config-hook reader, so ask git: `git help -c` lists 0 hook.* variables below
+#     2.54 and 3 on 2.54.
+#
+# The verdict is a byte compare against this repo plus a live-arm probe. Nothing
+# else is sufficient. For behaviour under the relapse state, run guard/selftest.
+set -u
+
+src=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+dest=${GUARD_DEST:-$HOME/.local/share/git-identity-guard}
+hooks=$dest/hooks
+rc=0
+wiring=" and is wired"
+fail() { echo "FAIL  $1"; rc=1; }
+ok() { echo "ok    $1"; }
+
+sum() { [ -f "$1" ] && shasum -a 256 "$1" 2>/dev/null | cut -d' ' -f1; }
+
+# 1. Bytes. The whole point of tracking the guard: a drifted copy is now visible.
+for f in check dispatch; do
+  want=$(sum "$src/$f")
+  got=$(sum "$dest/$f")
+  if [ -z "$got" ]; then
+    fail "$dest/$f is missing. Run guard/install."
+  elif [ "$want" != "$got" ]; then
+    fail "$dest/$f differs from $src/$f (installed $got, repo $want). Run guard/install."
+  else
+    ok "$f matches the repo ($want)"
+  fi
+done
+
+# 2. Hook symlink set, read with find because the login shell aliases `ls` to
+# `command ls --color` with no `=auto`, so piped `ls` output carries ANSI escapes.
+names=$(grep -v '^[[:space:]]*#' "$src/hooks.txt" | grep -v '^[[:space:]]*$' | sort)
+if [ -d "$hooks" ]; then
+  present=$(find "$hooks" -mindepth 1 -maxdepth 1 -exec basename {} \; 2>/dev/null | sort)
+  if [ "$names" = "$present" ]; then
+    ok "hooks/ names exactly the $(printf '%s\n' "$names" | wc -l | tr -d ' ') hooks in hooks.txt"
+  else
+    # Temp files, not process substitution: this has to run under a plain POSIX
+    # sh, and <() is a bash extension.
+    tmp=$(mktemp -d)
+    printf '%s\n' "$names" > "$tmp/want"
+    printf '%s\n' "$present" > "$tmp/got"
+    fail "hooks/ does not match hooks.txt. Only in repo: $(comm -23 "$tmp/want" "$tmp/got" | tr '\n' ' '); only on disk: $(comm -13 "$tmp/want" "$tmp/got" | tr '\n' ' ')"
+    rm -rf "$tmp"
+  fi
+  bad=$(find "$hooks" -mindepth 1 -maxdepth 1 -type l ! -lname '../dispatch' 2>/dev/null | tr '\n' ' ')
+  [ -n "$bad" ] && fail "hooks/ entries not pointing at ../dispatch: $bad"
+else
+  fail "$hooks is missing. Run guard/install."
+fi
+
+# 3. Wiring. NECESSARY, NOT SUFFICIENT: absent means the guard cannot fire, present
+# means nothing on its own (see the header). Read through git with --includes, not
+# by grepping the file, because ~/.gitconfig.local is reached via [include].
+if [ "$dest" != "$HOME/.local/share/git-identity-guard" ]; then
+  echo "note  GUARD_DEST is overridden, so the wiring checks below are skipped: git config"
+  echo "note  always names the real install path, never a sandbox copy."
+  cmd=skipped; hp=skipped
+  wiring=" (wiring unchecked)"
+else
+cmd=$(git config --global --includes --get hook.identity-guard.command 2>/dev/null)
+hp=$(git config --global --includes --get core.hooksPath 2>/dev/null)
+[ "$cmd" = "$dest/check" ] || fail "hook.identity-guard.command is '$cmd', expected '$dest/check'. Re-run setup."
+[ "$hp" = "$hooks" ] || fail "global core.hooksPath is '$hp', expected '$hooks'. Re-run setup."
+[ "$cmd" = "$dest/check" ] && [ "$hp" = "$hooks" ] && ok "both wirings present in git config (necessary, not sufficient)"
+fi
+
+# 4. Live arm.
+keys=$(git help -c 2>/dev/null | grep -c '^hook\.')
+ver=$(git --version)
+if [ "$keys" -gt 0 ] 2>/dev/null; then
+  ok "config-hook arm is live ($ver, $keys hook.* variables): fires even in a repo with its own core.hooksPath"
+else
+  echo "WARN  config-hook arm is DEAD config on this git ($ver, 0 hook.* variables)."
+  echo "WARN  Only the global core.hooksPath dispatcher runs, and a repo-local core.hooksPath REPLACES it."
+  echo "WARN  Such a repo commits with fleet rule 18 unenforced. Fix is a git upgrade, not a guard change."
+  [ "$rc" -eq 0 ] && rc=2
+fi
+
+case $rc in
+  0) echo "PASS  guard matches the repo${wiring}, and the config-hook arm is live." ;;
+  2) echo "PARTIAL  guard matches the repo${wiring}; coverage is reduced by this git version." ;;
+  *) echo "FAILED  this host's guard is not the one in this repo, or cannot fire. See the FAIL lines." ;;
+esac
+exit $rc

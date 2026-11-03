@@ -1,0 +1,92 @@
+#!/bin/sh
+# Behavioural arms for fleet rule 18's identity guard, run against whatever is
+# INSTALLED on this host (not against the repo copies; guard/verify compares those).
+#
+# Why a fixture and not the real repos: the three of Lacy's repos whose tracked
+# package.json postinstall ends `git config core.hooksPath .githooks` are not a
+# usable acceptance arm, because their config state is neither stable nor uniform
+# across hosts. One host had the dispatcher bypassed and the other had it live, both
+# of them on 2026-11-02 (LAC-6530, LACA-2991). The fixture sets that state on
+# purpose, which is the state any repo returns to on its next `bun install`.
+#
+# These arms are the only check that distinguishes "wired" from "fires". Structural
+# checks do not: after the postinstall relapse the repo's .git/hooks/pre-commit
+# symlink still resolves and is still -x while the guard is unreachable.
+#
+# Arm 1 deliberately passes `-c user.email`, which fleet rule 18 forbids. That is
+# the point: the arm asserts the guard REFUSES it. It happens in a mktemp repo that
+# is deleted on exit and never gets a remote.
+set -u
+
+want=me@lacymorrow.com
+bad=not-lacy@example.invalid
+keys=$(git help -c 2>/dev/null | grep -c '^hook\.')
+rc=0
+pass() { echo "PASS  $1"; }
+fail() { echo "FAIL  $1"; rc=1; }
+
+root=$(mktemp -d)
+trap 'rm -rf "$root"' EXIT INT TERM
+
+fixture() { # $1 = name, $2 = yes|no for a repo-local core.hooksPath
+  d=$root/$1
+  mkdir -p "$d"
+  git -C "$d" init -q
+  mkdir -p "$d/.githooks"
+  printf '#!/bin/sh\ntouch "$(git rev-parse --show-toplevel)/.repo-hook-ran"\nexit 0\n' > "$d/.githooks/pre-commit"
+  chmod 755 "$d/.githooks/pre-commit"
+  echo hello > "$d/file"
+  git -C "$d" add .githooks/pre-commit file
+  [ "$2" = yes ] && git -C "$d" config core.hooksPath .githooks
+  echo "$d"
+}
+
+# Arm 1: no repo-local hooksPath, so the global dispatcher is what git runs (and on
+# 2.54+ the config hook runs too, so the refusal prints twice). Must refuse on every
+# git version; this is the arm that covers the overwhelming majority of repos.
+d=$(fixture dispatcher no)
+if out=$(git -C "$d" -c user.email="$bad" -c user.name=Nobody commit -m probe 2>&1); then
+  fail "arm 1 (dispatcher path): commit as <$bad> SUCCEEDED. Rule 18 is not enforced here."
+else
+  case $out in
+    *"fleet rule 18"*) pass "arm 1 (dispatcher path): refused <$bad>" ;;
+    *) fail "arm 1: commit failed, but not with the guard's message: $out" ;;
+  esac
+fi
+
+# Arm 2: the relapse state. core.hooksPath=.githooks REPLACES the global dispatcher,
+# so only the config-hook arm can catch a bad identity here. Expectation is
+# host-aware on purpose: 0 hook.* variables means the host really is unguarded in
+# such a repo, which is a true finding about the host, not a broken guard.
+d=$(fixture relapsed yes)
+if out=$(git -C "$d" -c user.email="$bad" -c user.name=Nobody commit -m probe 2>&1); then
+  if [ "$keys" -gt 0 ] 2>/dev/null; then
+    fail "arm 2 (repo-local hooksPath): commit as <$bad> SUCCEEDED although this git has $keys hook.* variables. The config-hook arm is wired but not firing."
+  else
+    echo "WARN  arm 2 (repo-local hooksPath): commit as <$bad> succeeded, as expected on this git ($(git --version), 0 hook.* variables)."
+    echo "WARN  Every repo that sets its own core.hooksPath commits with fleet rule 18 unenforced. Fix is a git upgrade."
+  fi
+else
+  case $out in
+    *"fleet rule 18"*) pass "arm 2 (repo-local hooksPath): refused <$bad> via the config-hook arm" ;;
+    *) fail "arm 2: commit failed, but not with the guard's message: $out" ;;
+  esac
+fi
+
+# Arm 3: the guard must not break a legitimate commit, and the repo's own hook must
+# still run. A guard that refuses everything would pass arms 1 and 2.
+ident=$(git -C "$d" var GIT_AUTHOR_IDENT 2>/dev/null | sed -n 's/.*<\(.*\)>.*/\1/p')
+if [ "$ident" != "$want" ]; then
+  echo "SKIP  arm 3: inherited git identity is <$ident>, not <$want>, so a clean commit cannot be tested without an override."
+elif out=$(git -C "$d" commit -m legit 2>&1); then
+  if [ -f "$d/.repo-hook-ran" ]; then
+    pass "arm 3: commit as <$want> allowed, and the repo's own .githooks/pre-commit still ran"
+  else
+    fail "arm 3: commit as <$want> allowed, but the repo's own .githooks/pre-commit did NOT run"
+  fi
+else
+  fail "arm 3: commit as <$want> was REFUSED: $out"
+fi
+
+[ "$rc" -eq 0 ] && echo "OK    behavioural arms agree with this host's git version." || echo "FAILED"
+exit $rc

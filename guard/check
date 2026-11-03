@@ -1,0 +1,29 @@
+#!/bin/sh
+# Fleet rule 18: commits on this machine are authored only as Lacy.
+#
+# How this file gets reached is a per-host property, not a property of this file.
+# `setup` writes both wirings into ~/.gitconfig.local (see setup/index.mjs) and the
+# git version decides which one git actually consults:
+#
+#   git >= 2.54   reads [hook "identity-guard"], which fires even in a repo that
+#                 sets its own core.hooksPath. Measured on zero, git 2.54.0
+#                 (Apple Git-157): this check ran BEFORE the repo's own pre-commit.
+#   git <  2.54   lists 0 hook.* variables in `git help -c`, so that block is dead
+#                 config and only the global core.hooksPath dispatcher runs. That
+#                 dispatcher is REPLACED, not stacked, by a repo-local hooksPath, so
+#                 such a repo gets no identity check at all. Measured on graphite,
+#                 git 2.50.1 (Apple Git-155), 3 such repos (LACA-2991).
+#
+# Do not flatten that into a single coverage claim in either direction: both halves
+# have been measured and they disagree. `guard/verify` is what answers "is THIS host
+# guarded", and it answers it by version plus a byte compare against this repo.
+want=me@lacymorrow.com
+for v in GIT_AUTHOR_IDENT GIT_COMMITTER_IDENT; do
+  email=$(git var "$v" 2>/dev/null | sed -n 's/.*<\(.*\)>.*/\1/p')
+  if [ "$email" != "$want" ]; then
+    echo "git-identity-guard: $v is <$email>; fleet rule 18 says commits are authored only as <$want>." >&2
+    echo "Do not override git identity (--author, -c user.email, GIT_AUTHOR_*). See ~/.openclaw/references/rules.md." >&2
+    exit 1
+  fi
+done
+exit 0

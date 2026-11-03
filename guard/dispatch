@@ -1,0 +1,44 @@
+#!/bin/sh
+# Global core.hooksPath for git versions without config-based hooks.
+# Runs the identity check on pre-commit, then hands off to the repo's own
+# .git/hooks so lfs and friends keep working.
+dir=$(cd "$(dirname "$0")/.." && pwd)
+name=$(basename "$0")
+[ "$name" = pre-commit ] && { "$dir/check" || exit 1; }
+hook="$(git rev-parse --git-common-dir 2>/dev/null)/hooks/$name"
+[ -x "$hook" ] && exec "$hook" "$@"
+
+# Fall-through, reached when the repo has no hook of this name.
+#
+# rc 0 here means "nothing objected, carry on", which is the correct answer for a
+# VETO-shaped hook, and every hook named in guard/hooks.txt is veto-shaped. It is a
+# LIE for the three DO-THE-WORK-shaped hooks, where git reads rc 0 as "the hook
+# performed the operation, skip the builtin":
+#
+#   push-to-checkout     git skips updating the receiving index and worktree, so the
+#                        ref and HEAD move and the old bytes stay on disk. Six
+#                        consecutive fleet-health --peer carries into graphite landed
+#                        that way on 2026-10-28 and 10-29 and every one reported
+#                        success (LACA-2862, LAC-6186, root-caused in LACA-2865).
+#   proc-receive         git delegates the ref updates and expects a stdout report;
+#                        silence means no ref was reported as updated.
+#   fsmonitor-watchman   empty output means "nothing changed", so git can miss real
+#                        edits to the worktree.
+#
+# Those three names are therefore deliberately absent from guard/hooks.txt: with no
+# hook present git runs its own builtin, which is correct (measured on graphite git
+# 2.50.1 Apple Git-155, arm B of /tmp/hp-arms.sh). A repo that wants its own
+# implementation still gets it, because the exec above runs first.
+#
+# The installer prunes any symlink in ./hooks that guard/hooks.txt does not name, so
+# this arm should now be unreachable. It stays anyway: a refusal is cheap, and a
+# hand-created symlink on a host that has not re-run setup is still possible. Refuse
+# LOUDLY rather than silently claim work this dispatcher never does.
+case "$name" in
+  push-to-checkout|proc-receive|fsmonitor-watchman)
+    echo "git-identity-guard: $name is a do-the-work hook and this dispatcher does not implement it." >&2
+    echo "git-identity-guard: rm $dir/hooks/$name so git uses its builtin instead. See LACA-2865." >&2
+    exit 1
+    ;;
+esac
+exit 0
