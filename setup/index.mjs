@@ -110,6 +110,18 @@ async function setupGitConfig() {
   // second one. On 2.54 and newer BOTH run, so the refusal prints twice; that is
   // expected and not a bug. Nothing is emitted when the guard is absent, so a machine
   // without it is never handed a hook command that does not exist. LACA-2984.
+  //
+  // Measured 2026-11-02 (LAC-6527), because the two wirings are NOT equivalent and the
+  // difference decides coverage. core.hooksPath REPLACES rather than stacks, so a repo
+  // that sets its own defeats the dispatcher; the config hook does not care. zero is
+  // git 2.54.0 (Apple Git-157): in a scratch repo with its own core.hooksPath, .../check
+  // ran first and the repo's own pre-commit ran after it, so the config arm covers all
+  // 26 of 172 repos under zero's $HOME that set a repo-local hooksPath. graphite is
+  // 2.50.1 (Apple Git-155), where `git help -c` lists 0 hook.* variables: there the
+  // [hook] block below is dead config and a repo with its own hooksPath gets NO identity
+  // check at all (LACA-2991, 3 such repos found there). Do not "simplify" this comment
+  // into "the config hook does not cover hooksPath repos" -- that is false on zero, and
+  // the honest statement is that coverage is a per-host function of the git version.
   const guardDir = join(HOME, '.local/share/git-identity-guard');
   const guardCheck = join(guardDir, 'check');
   const guardHooks = join(guardDir, 'hooks');
@@ -130,11 +142,19 @@ async function setupGitConfig() {
 ${guard}`;
 
   writeFileSync(localFile, content);
-  p.log.success(
-    guardWired
-      ? `Wrote ${pc.dim('~/.gitconfig.local')} (identity guard wired, fleet rule 18)`
-      : `Wrote ${pc.dim('~/.gitconfig.local')}`
-  );
+  if (guardWired) {
+    p.log.success(`Wrote ${pc.dim('~/.gitconfig.local')} (identity guard wired, fleet rule 18)`);
+  } else {
+    // This branch preserves wiring it never installs, so say so out loud: the only other
+    // tell was a missing parenthetical on a success line. The guard itself is unversioned
+    // state in ~/.local/share on every host that has it, and installing it is unowned
+    // work (LAC-6527). Until that is fixed, a host that reaches this branch commits with
+    // fleet rule 18 unenforced.
+    p.log.warn(
+      `Wrote ${pc.dim('~/.gitconfig.local')} ${pc.yellow('without an identity guard')}: fleet rule 18 is NOT enforced on this machine.\n` +
+        `  Install ${pc.dim('~/.local/share/git-identity-guard/{check,hooks}')} (copy it from a host that has it), then re-run setup to wire it.`
+    );
+  }
 
   return { name, email };
 }
