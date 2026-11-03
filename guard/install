@@ -60,15 +60,18 @@ done
 
 # Prune first, then create: an install has to be able to REMOVE a hook name, which
 # is the only way a host recovers from a do-the-work symlink someone added by hand.
-for existing in "$hooks"/* "$hooks"/.??*; do
-  [ -e "$existing" ] || [ -L "$existing" ] || continue
-  base=${existing##*/}
-  keep=no
-  for n in $names; do
-    [ "$base" = "$n" ] && { keep=yes; break; }
-  done
-  [ "$keep" = yes ] || rm -f -- "$existing"
+#
+# Built as find arguments rather than a shell glob. `set -f` above disables pathname
+# expansion, so the previous `for existing in "$hooks"/* "$hooks"/.??*` left both
+# patterns literal and pruned NOTHING while still exiting 0. Measured on zero before
+# this fix (LAC-6544): a planted `hooks/rogue` and `hooks/.hidden-rogue` both survived
+# an install that reported success, and only `guard/verify` caught it. find also covers
+# dotfiles without a second pattern and never word-splits a filename.
+set -- "$hooks" -mindepth 1 -maxdepth 1
+for n in $names; do
+  set -- "$@" ! -name "$n"
 done
+find "$@" -exec rm -f -- {} +
 
 for n in $names; do
   ln -sfn ../dispatch "$hooks/$n"

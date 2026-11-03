@@ -1,6 +1,8 @@
 #!/bin/sh
-# Behavioural arms for fleet rule 18's identity guard, run against whatever is
-# INSTALLED on this host (not against the repo copies; guard/verify compares those).
+# Behavioural arms for fleet rule 18's identity guard. Arms 1-3 run against whatever
+# is INSTALLED on this host (not against the repo copies; guard/verify compares
+# those). Arms 4-5 run THIS repo's guard/install into a mktemp sandbox and never
+# touch the real install.
 #
 # Why a fixture and not the real repos: the three of Lacy's repos whose tracked
 # package.json postinstall ends `git config core.hooksPath .githooks` are not a
@@ -87,6 +89,48 @@ elif out=$(git -C "$d" commit -m legit 2>&1); then
 else
   fail "arm 3: commit as <$want> was REFUSED: $out"
 fi
+
+# Arm 4: the installer must be able to REMOVE. This is a regression arm for LAC-6544,
+# where `set -f` silently disabled a glob-based prune loop: install still exited 0,
+# every stray survived, and only guard/verify caught it. A dotfile is planted too,
+# because the old loop needed a second pattern for those and find does not.
+src=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+sandbox=$root/install-sandbox
+if GUARD_DEST=$sandbox "$src/install" >/dev/null 2>&1; then
+  touch "$sandbox/hooks/rogue" "$sandbox/hooks/.hidden-rogue"
+  ln -sfn ../dispatch "$sandbox/hooks/push-to-checkout"
+  if GUARD_DEST=$sandbox "$src/install" >/dev/null 2>&1; then
+    left=$(find "$sandbox/hooks" -mindepth 1 -maxdepth 1 -name 'rogue' -o -name '.hidden-rogue' -o -name 'push-to-checkout' | wc -l | tr -d ' ')
+    kept=$(find "$sandbox/hooks" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')
+    want=$(grep -v '^[[:space:]]*#' "$src/hooks.txt" | grep -v '^[[:space:]]*$' | wc -l | tr -d ' ')
+    if [ "$left" = 0 ] && [ "$kept" = "$want" ]; then
+      pass "arm 4 (install prunes): rogue, .hidden-rogue and push-to-checkout all removed, $kept hooks kept"
+    else
+      fail "arm 4 (install prunes): $left stray(s) survived and $kept of $want hooks remain"
+    fi
+  else
+    fail "arm 4: the second install failed"
+  fi
+else
+  fail "arm 4: the first install into a sandbox failed"
+fi
+
+# Arm 5: the installer must refuse a hooks.txt it cannot safely install, before it
+# writes anything. Both names below are rejected by the charset arm; `*` additionally
+# must not expand, which is what `set -f` is for.
+refuse=$root/refuse
+mkdir -p "$refuse"
+cp "$src/check" "$src/dispatch" "$src/install" "$refuse/"
+for n in 'push-to-checkout' '*'; do
+  printf 'pre-commit
+%s
+' "$n" > "$refuse/hooks.txt"
+  if ( cd / && GUARD_DEST=$root/refuse-dest "$refuse/install" >/dev/null 2>&1 ); then
+    fail "arm 5 (install refuses): a hooks.txt naming '$n' was accepted"
+  else
+    pass "arm 5 (install refuses): a hooks.txt naming '$n' is refused"
+  fi
+done
 
 [ "$rc" -eq 0 ] && echo "OK    behavioural arms agree with this host's git version." || echo "FAILED"
 exit $rc
