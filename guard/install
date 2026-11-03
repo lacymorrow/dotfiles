@@ -13,6 +13,11 @@
 # owns the files.
 set -eu
 
+# set -f: the hook-name loops below deliberately rely on word splitting of a
+# newline-separated list, which also exposes them to pathname expansion. A `*` in
+# hooks.txt would otherwise expand against the cwd. Globbing is never wanted here.
+set -f
+
 src=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 dest=${GUARD_DEST:-$HOME/.local/share/git-identity-guard}
 hooks=$dest/hooks
@@ -37,7 +42,9 @@ for n in $names; do
       echo "guard/install: hooks.txt names $n, which is a do-the-work hook; refusing." >&2
       exit 1
       ;;
-    */*|.|..|'')
+    *[!a-z0-9-]*|*/*|.|..|'')
+      # Lowercase, digits and dashes cover every hook name git defines. Anything else
+      # is either a path, a glob character, or whitespace that survived the split.
       echo "guard/install: hooks.txt names an invalid hook '$n'; refusing." >&2
       exit 1
       ;;

@@ -132,7 +132,7 @@ async function setupGitConfig() {
   const guardDir = join(HOME, '.local/share/git-identity-guard');
   const guardCheck = join(guardDir, 'check');
   const guardHooks = join(guardDir, 'hooks');
-  const guardInstall = installIdentityGuard();
+  const guardInstall = installIdentityGuard(guardDir);
   const guardWired = guardInstall.ok;
   const guard = guardWired
     ? `[hook "identity-guard"]
@@ -173,7 +173,7 @@ ${guard}`;
 // repair the guard without running the whole interactive wizard, and so guard/verify
 // has one owner to point at. Returns the rc as a boolean plus the installer's own
 // message, which is the only useful thing to print on failure.
-function installIdentityGuard() {
+function installIdentityGuard(guardDir) {
   const installer = join(DOTFILES_DIR, 'guard', 'install');
   if (!existsSync(installer)) {
     return { ok: false, error: `Missing ${installer}; this checkout predates guard/ (LAC-6530).` };
@@ -181,7 +181,12 @@ function installIdentityGuard() {
   try {
     // execFileSync, not execSync: no shell, so a $ or a space in the repo path
     // cannot be interpolated or word-split.
-    execFileSync(installer, { stdio: 'pipe' });
+    //
+    // GUARD_DEST is passed explicitly rather than inherited. The installer honours it
+    // for sandbox testing, and an inherited one would install the guard somewhere the
+    // block written below does not wire, which is the silent half-install this whole
+    // change exists to remove.
+    execFileSync(installer, { stdio: 'pipe', env: { ...process.env, GUARD_DEST: guardDir } });
     return { ok: true, error: null };
   } catch (err) {
     const detail = (err.stderr?.toString() || err.stdout?.toString() || err.message || '').trim();
