@@ -46,6 +46,7 @@ fixture() { # $1 = name, $2 = yes|no for a repo-local core.hooksPath
   # execs .git/hooks/pre-commit when it is not. Without this copy the dispatcher
   # path has no repo hook to delegate to and could not tell a guard that honours
   # the hand-off from one that swallows it.
+  mkdir -p "$d/.git/hooks" # absent under init.templateDir= / GIT_TEMPLATE_DIR=
   cp "$d/.githooks/pre-commit" "$d/.git/hooks/pre-commit"
   chmod 755 "$d/.git/hooks/pre-commit"
   echo hello > "$d/file"
@@ -128,7 +129,9 @@ legit_arm() { # $1 = arm label, $2 = fixture name, $3 = yes|no for repo-local ho
   fi
 }
 
-ident=$(git var GIT_AUTHOR_IDENT 2>/dev/null | sed -n 's/.*<\(.*\)>.*/\1/p')
+# -C "$root": the arms run in fresh fixtures that inherit the GLOBAL identity, so read
+# that, not the identity of whatever directory selftest was launched from.
+ident=$(git -C "$root" var GIT_AUTHOR_IDENT 2>/dev/null | sed -n 's/.*<\(.*\)>.*/\1/p')
 if [ "$ident" != "$want" ]; then
   echo "SKIP  arm 3: inherited git identity is <$ident>, not <$want>, so a clean commit cannot be tested without an override."
 else
