@@ -1,0 +1,70 @@
+#!/bin/sh
+# Install fleet rule 18's identity guard from this repo into
+# ~/.local/share/git-identity-guard/. Idempotent. rc 0 means "the guard on this
+# host is now exactly what this repo says it is".
+#
+# This exists because installation used to be unowned (LAC-6530): the three files
+# were hand-placed on each host, no repo tracked them, `setup` preserved wiring it
+# never installed, and the copies had already drifted with no way to see it. setup
+# now calls this script and uses its rc for the "is the guard wired" decision, so
+# the "wired but not installed" branch cannot happen on a host that runs setup.
+#
+# Wiring (~/.gitconfig.local) is still written by setup/index.mjs. This script only
+# owns the files.
+set -eu
+
+src=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+dest=${GUARD_DEST:-$HOME/.local/share/git-identity-guard}
+hooks=$dest/hooks
+
+for f in check dispatch hooks.txt; do
+  [ -f "$src/$f" ] || { echo "guard/install: missing $src/$f" >&2; exit 1; }
+done
+
+# Hook names are read from the tracked list, never from whatever happens to be on
+# disk, so a stray symlink cannot survive an install. `ls` is avoided on purpose:
+# the login shell aliases it to `command ls --color` with no `=auto`, so its output
+# carries ANSI escapes even through a pipe and every name read that way is wrong.
+names=$(grep -v '^[[:space:]]*#' "$src/hooks.txt" | grep -v '^[[:space:]]*$')
+[ -n "$names" ] || { echo "guard/install: hooks.txt names no hooks" >&2; exit 1; }
+
+# Three names must never be installed: the dispatcher's fall-through returns 0,
+# which git reads as "the hook did the work" for do-the-work hooks. See
+# guard/dispatch and guard/hooks.txt (LACA-2865 / LAC-6186).
+for n in $names; do
+  case $n in
+    push-to-checkout|proc-receive|fsmonitor-watchman)
+      echo "guard/install: hooks.txt names $n, which is a do-the-work hook; refusing." >&2
+      exit 1
+      ;;
+    */*|.|..|'')
+      echo "guard/install: hooks.txt names an invalid hook '$n'; refusing." >&2
+      exit 1
+      ;;
+  esac
+done
+
+mkdir -p "$hooks"
+for f in check dispatch; do
+  cp -- "$src/$f" "$dest/$f.tmp.$$"
+  chmod 755 "$dest/$f.tmp.$$"
+  mv -f -- "$dest/$f.tmp.$$" "$dest/$f"
+done
+
+# Prune first, then create: an install has to be able to REMOVE a hook name, which
+# is the only way a host recovers from a do-the-work symlink someone added by hand.
+for existing in "$hooks"/* "$hooks"/.??*; do
+  [ -e "$existing" ] || [ -L "$existing" ] || continue
+  base=${existing##*/}
+  keep=no
+  for n in $names; do
+    [ "$base" = "$n" ] && { keep=yes; break; }
+  done
+  [ "$keep" = yes ] || rm -f -- "$existing"
+done
+
+for n in $names; do
+  ln -sfn ../dispatch "$hooks/$n"
+done
+
+echo "guard/install: installed $(printf '%s\n' "$names" | wc -l | tr -d ' ') hook symlinks into $hooks"

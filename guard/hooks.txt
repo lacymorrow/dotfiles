@@ -1,0 +1,36 @@
+# Hook names symlinked into ~/.local/share/git-identity-guard/hooks/ -> ../dispatch
+# by `setup`. One name per line; # comments and blank lines ignored.
+#
+# Every name here is VETO-shaped: rc 0 means "nothing objected". The dispatcher's
+# fall-through returns 0, which is only safe for that shape, so three names are
+# deliberately NOT in this list and must never be added:
+#
+#   push-to-checkout, proc-receive, fsmonitor-watchman
+#
+# For those, git reads rc 0 as "the hook did the work, skip the builtin". See the
+# measured consequences in guard/dispatch (LACA-2865 / LAC-6186).
+applypatch-msg
+commit-msg
+p4-changelist
+p4-post-changelist
+p4-pre-submit
+p4-prepare-changelist
+post-applypatch
+post-checkout
+post-commit
+post-index-change
+post-merge
+post-receive
+post-rewrite
+post-update
+pre-applypatch
+pre-auto-gc
+pre-commit
+pre-merge-commit
+pre-push
+pre-rebase
+pre-receive
+prepare-commit-msg
+reference-transaction
+sendemail-validate
+update

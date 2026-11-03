@@ -99,6 +99,29 @@ The tracked `.gitconfig` contains aliases, colors, and settings — but **no per
 
 The tracked `.gitconfig` includes it via `[include] path = ~/.gitconfig.local`.
 
+### Identity guard (fleet rule 18)
+
+Commits on these machines are authored only as `me@lacymorrow.com`. That is enforced
+by a pre-commit guard that lives in `guard/`:
+
+| File | What it is |
+| --- | --- |
+| `guard/check` | The refusal. Compares `git var GIT_AUTHOR_IDENT` / `GIT_COMMITTER_IDENT` against the one allowed address. |
+| `guard/dispatch` | Global `core.hooksPath` shim for git versions with no config-hook reader. Runs `check` on pre-commit, then hands off to the repo's own `.git/hooks`. |
+| `guard/hooks.txt` | The hook names `dispatch` is symlinked as. Three do-the-work hooks are deliberately excluded; the file says why. |
+| `guard/install` | Copies `check` and `dispatch` into `~/.local/share/git-identity-guard/`, regenerates the symlinks, prunes any name not in `hooks.txt`. Idempotent. Run it directly to repair a host. |
+| `guard/verify` | Answers "is this host guarded", by byte compare against this repo plus a live-arm probe. |
+| `guard/selftest` | Behavioural arms in a throwaway fixture: does the guard actually refuse a bad identity, including in a repo that sets its own `core.hooksPath`. |
+
+`setup` runs `guard/install` and wires both arms into `~/.gitconfig.local`. Which arm
+git consults depends on the git version, so **coverage is a per-host property**: 2.54
+and newer read `[hook "identity-guard"]`, which fires even in a repo with its own
+`core.hooksPath`; older git sees only `core.hooksPath`, which a repo-local setting
+replaces outright. `guard/verify` exits 2 to say exactly that.
+
+Never check this with a config grep or a `test -x` on a hook symlink. Both read green
+on a host where the guard cannot fire; `guard/verify` documents the measurements.
+
 ## Secrets
 
 Tokens and credentials go in `~/.secrets` — this file is sourced automatically by `.shell_common` (on login) but is **never committed** to this repo.
