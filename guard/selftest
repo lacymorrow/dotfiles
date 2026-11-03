@@ -18,6 +18,9 @@
 # Arm 1 deliberately passes `-c user.email`, which fleet rule 18 forbids. That is
 # the point: the arm asserts the guard REFUSES it. It happens in a mktemp repo that
 # is deleted on exit and never gets a remote.
+#
+# Every arm builds its own fixture and no arm reads another arm's state. Arm order is
+# not load-bearing and must not become load-bearing: see arm 3 for what that cost.
 set -u
 
 want=me@lacymorrow.com
@@ -37,6 +40,14 @@ fixture() { # $1 = name, $2 = yes|no for a repo-local core.hooksPath
   mkdir -p "$d/.githooks"
   printf '#!/bin/sh\ntouch "$(git rev-parse --show-toplevel)/.repo-hook-ran"\nexit 0\n' > "$d/.githooks/pre-commit"
   chmod 755 "$d/.githooks/pre-commit"
+  # The same hook is planted a second time where guard/dispatch chains, so "the
+  # repo's own pre-commit still ran" is assertable on BOTH paths: git runs
+  # .githooks/pre-commit itself when core.hooksPath is set, and the dispatcher
+  # execs .git/hooks/pre-commit when it is not. Without this copy the dispatcher
+  # path has no repo hook to delegate to and could not tell a guard that honours
+  # the hand-off from one that swallows it.
+  cp "$d/.githooks/pre-commit" "$d/.git/hooks/pre-commit"
+  chmod 755 "$d/.git/hooks/pre-commit"
   echo hello > "$d/file"
   git -C "$d" add .githooks/pre-commit file
   [ "$2" = yes ] && git -C "$d" config core.hooksPath .githooks
@@ -75,19 +86,54 @@ else
   esac
 fi
 
-# Arm 3: the guard must not break a legitimate commit, and the repo's own hook must
-# still run. A guard that refuses everything would pass arms 1 and 2.
-ident=$(git -C "$d" var GIT_AUTHOR_IDENT 2>/dev/null | sed -n 's/.*<\(.*\)>.*/\1/p')
+# Arm 3: the CONTROL. The guard must not break a legitimate commit, and the repo's
+# own hook must still run. A guard that refuses everything would pass arms 1 and 2.
+#
+# Two things about this arm are deliberate, both from LACA-3001.
+#
+# It builds its OWN fixtures. It used to reuse arm 2's directory, which works only
+# where arm 2's commit is REFUSED. On every git < 2.54 arm 2's bad commit SUCCEEDS
+# and is expected to, and that success consumed the staged change: this arm then ran
+# `git commit` with an empty index, got rc 1 `nothing added to commit`, and reported
+# it as `was REFUSED`. The suite's only control could not run on exactly the hosts it
+# was measuring, and guard/selftest could never print OK there. Arm 2's commit had
+# also already written .repo-hook-ran, so the marker half was pre-satisfied and could
+# not fail either. No arm may depend on another arm's leftovers.
+#
+# It checks the guard's MESSAGE before calling anything a refusal. A nonzero
+# `git commit` is not evidence that any layer refused: `nothing added to commit`, a
+# bad commit.gpgsign and a dirty index all produce it. rc says a commit did not
+# happen; only the text says the guard is why.
+#
+# 3a is the path where the guard is in play on EVERY git version: no repo-local
+# hooksPath, so guard/dispatch runs check and then execs the repo's .git/hooks.
+# 3b is the relapse state, which is guard-free below 2.54 and config-hook guarded at
+# or above it. So 3a is the arm that controls this host's dominant path, and 3b is
+# the one that controls the relapse path once the host reaches 2.54.
+legit_arm() { # $1 = arm label, $2 = fixture name, $3 = yes|no for repo-local hooksPath
+  d=$(fixture "$2" "$3")
+  if out=$(git -C "$d" commit -m legit 2>&1); then
+    if [ -f "$d/.repo-hook-ran" ]; then
+      pass "arm $1: commit as <$want> allowed, and the repo's own pre-commit still ran"
+    else
+      fail "arm $1: commit as <$want> allowed, but the repo's own pre-commit did NOT run"
+    fi
+  else
+    case $out in
+      *"fleet rule 18"*)
+        fail "arm $1: the guard REFUSED a legitimate commit as <$want>. This is a real guard defect: $out" ;;
+      *)
+        fail "arm $1: commit as <$want> failed WITHOUT the guard's message, so no layer refused it. Read this as a broken arm, not a verdict on the guard: $out" ;;
+    esac
+  fi
+}
+
+ident=$(git var GIT_AUTHOR_IDENT 2>/dev/null | sed -n 's/.*<\(.*\)>.*/\1/p')
 if [ "$ident" != "$want" ]; then
   echo "SKIP  arm 3: inherited git identity is <$ident>, not <$want>, so a clean commit cannot be tested without an override."
-elif out=$(git -C "$d" commit -m legit 2>&1); then
-  if [ -f "$d/.repo-hook-ran" ]; then
-    pass "arm 3: commit as <$want> allowed, and the repo's own .githooks/pre-commit still ran"
-  else
-    fail "arm 3: commit as <$want> allowed, but the repo's own .githooks/pre-commit did NOT run"
-  fi
 else
-  fail "arm 3: commit as <$want> was REFUSED: $out"
+  legit_arm "3a (dispatcher path)" legit-dispatcher no
+  legit_arm "3b (repo-local hooksPath)" legit-relapsed yes
 fi
 
 # Arm 4: the installer must be able to REMOVE. This is a regression arm for LAC-6544,
@@ -102,11 +148,13 @@ if GUARD_DEST=$sandbox "$src/install" >/dev/null 2>&1; then
   if GUARD_DEST=$sandbox "$src/install" >/dev/null 2>&1; then
     left=$(find "$sandbox/hooks" -mindepth 1 -maxdepth 1 -name 'rogue' -o -name '.hidden-rogue' -o -name 'push-to-checkout' | wc -l | tr -d ' ')
     kept=$(find "$sandbox/hooks" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')
-    want=$(grep -v '^[[:space:]]*#' "$src/hooks.txt" | grep -v '^[[:space:]]*$' | wc -l | tr -d ' ')
-    if [ "$left" = 0 ] && [ "$kept" = "$want" ]; then
+    # Not `want`: that holds the identity arms 1-3 assert on, and overwriting it
+    # here would make a reordered or re-run arm 3 compare against a hook count.
+    nhooks=$(grep -v '^[[:space:]]*#' "$src/hooks.txt" | grep -v '^[[:space:]]*$' | wc -l | tr -d ' ')
+    if [ "$left" = 0 ] && [ "$kept" = "$nhooks" ]; then
       pass "arm 4 (install prunes): rogue, .hidden-rogue and push-to-checkout all removed, $kept hooks kept"
     else
-      fail "arm 4 (install prunes): $left stray(s) survived and $kept of $want hooks remain"
+      fail "arm 4 (install prunes): $left stray(s) survived and $kept of $nhooks hooks remain"
     fi
   else
     fail "arm 4: the second install failed"
