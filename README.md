@@ -23,6 +23,21 @@ The setup wizard will:
 3. Prompt for computer name (macOS)
 4. Let you pick which modules to run (symlinks, brew, node, macOS settings, npm login)
 
+### Work machine
+
+```bash
+cd ~/dotfiles && ./setup.sh --work
+# or, on a fresh Mac:
+curl -fsSL https://raw.githubusercontent.com/lacymorrow/dotfiles/main/setup.sh | bash -s -- --work
+```
+
+Answering yes to "Is this a work machine?" does the same thing. The work flow differs in four ways:
+
+- No identity guard, so commits are not limited to one author.
+- Git email is optional. Leave it empty to skip git identity and leave `~/.gitconfig.local` alone.
+- Homebrew installs `Brewfile.work`, which drops tunnels, VPNs, scanners, torrents, VMs, unapproved AI tools and the hardware section.
+- The computer name is not prompted for or changed, and system-level settings stay off.
+
 ### Manual Scripts
 
 You can also run individual scripts directly:
