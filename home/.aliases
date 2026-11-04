@@ -189,6 +189,57 @@ showdesktop() {
   killall Finder
 }
 
+# Clean desktop for screen recording (OpenScreen frames it in color, so the
+# desktop itself goes neutral). `recmode` turns it on, `recmode off` puts back
+# exactly what was there. The prompt swap applies to the current shell only.
+# Override the wallpaper with RECMODE_WALLPAPER=/path/to/image.
+_recmode_state=~/.cache/recmode.state
+_wallpaper() {
+  if [ -n "$1" ]; then
+    osascript -e "tell application \"System Events\" to tell every desktop to set picture to POSIX file \"$1\""
+  else
+    osascript -e 'tell application "System Events" to get picture of desktop 1'
+  fi
+}
+recmode() {
+  if [ "$1" = off ]; then
+    if [ ! -f "$_recmode_state" ]; then
+      echo "recmode: not on"
+      unset STARSHIP_CONFIG
+      return 1
+    fi
+    local wallpaper dock icons widgets
+    { read -r wallpaper; read -r dock; read -r icons; read -r widgets; } < "$_recmode_state"
+    _wallpaper "$wallpaper"
+    defaults write com.apple.dock autohide -bool "$dock"
+    defaults write com.apple.finder CreateDesktop -bool "$icons"
+    _widgets "$widgets"
+    killall Dock Finder
+    unset STARSHIP_CONFIG
+    command rm -f "$_recmode_state"
+    echo "recmode: off"
+    return
+  fi
+
+  # Save the current look once, so running recmode twice can't lose it.
+  if [ ! -f "$_recmode_state" ]; then
+    mkdir -p ~/.cache
+    {
+      _wallpaper
+      defaults read com.apple.dock autohide 2>/dev/null || echo 0
+      defaults read com.apple.finder CreateDesktop 2>/dev/null || echo 1
+      defaults read com.apple.WindowManager StandardHideWidgets 2>/dev/null || echo 0
+    } > "$_recmode_state"
+  fi
+  _wallpaper "${RECMODE_WALLPAPER:-/System/Library/Desktop Pictures/Solid Colors/Space Gray Pro.png}"
+  defaults write com.apple.dock autohide -bool true
+  defaults write com.apple.finder CreateDesktop -bool false
+  _widgets true
+  killall Dock Finder
+  export STARSHIP_CONFIG=~/.config/starship-rec.toml
+  clear
+}
+
 # URL-encode strings
 alias urlencode='python3 -c "import sys, urllib.parse; print(urllib.parse.quote_plus(sys.argv[1]))"'
 

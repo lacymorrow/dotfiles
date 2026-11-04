@@ -1,0 +1,20 @@
+# Recording prompt, switched on by `recmode` (see ~/.aliases).
+# No user, host, versions or timers: just where you are and the cursor.
+
+add_newline = true
+format = "$directory$git_branch$line_break$character"
+
+[directory]
+truncation_length = 1
+truncate_to_repo = true
+format = "[$path]($style) "
+style = "bold #0a84ff"
+
+[git_branch]
+symbol = ""
+format = "[$branch]($style)"
+style = "#8e8e93"
+
+[character]
+success_symbol = "[❯](bold #0a84ff)"
+error_symbol = "[❯](bold #ff453a)"

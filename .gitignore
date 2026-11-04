@@ -109,5 +109,6 @@ home/.ssh/**
 
 home/.config/**
 !home/.config/starship.toml
+!home/.config/starship-rec.toml
 !home/.config/ghostty/
 !home/.config/ghostty/config
