@@ -31,3 +31,8 @@ fi
 # macOS-specific completions
 complete -W "NSGlobalDomain" defaults
 complete -o nospace -W "Contacts Calendar Dock Finder Mail Safari iTunes SystemUIServer Terminal Twitter" killall
+
+# Fleet rule 13: email send gate must shadow the real gog/himalaya.
+# Keep this LAST so nothing else can get in front of it on PATH.
+# (Was present in .zprofile/.zshenv but not here, so `bash -lc` sent ungated.)
+[ -d "$HOME/.openclaw/guards/bin" ] && export PATH="$HOME/.openclaw/guards/bin:$PATH"
