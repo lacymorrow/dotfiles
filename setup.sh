@@ -44,4 +44,4 @@ printf "  ✓ Node.js\n"
 cd "$DOTFILES_DIR/setup"
 npm install --silent 2>/dev/null
 printf "\n"
-node index.mjs
+node index.mjs "$@"

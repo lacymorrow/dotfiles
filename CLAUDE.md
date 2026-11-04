@@ -71,6 +71,7 @@ curl -fsSL https://raw.githubusercontent.com/lacymorrow/dotfiles/main/setup.sh |
 - **Nix files exist** (`flake.nix`, `darwin-configuration.nix`, `home.nix`) as an experimental alternative but are not part of the main setup flow.
 - **`apply-macos-settings.sh` is parameterized.** Pass computer name and work machine flag via env vars (`DOTFILES_COMPUTER_NAME`, `DOTFILES_WORK_MACHINE`), positional args, or it prompts interactively with sane defaults. It only prompts when attached to a TTY, so unattended runs don't hang.
 - **Privileged macOS settings are opt-in.** Everything routes through a `sudo_do` helper; without `DOTFILES_ALLOW_SUDO=true` those lines print as skipped instead of running. This lets an agent apply the per-user settings unattended.
+- **Work machines use `./setup.sh --work`.** No identity guard, optional git email, `Brewfile.work` instead of `Brewfile`, and no rename or sudo settings. `Brewfile.work` is a separate file because `brew bundle dump` would flatten conditionals in `Brewfile`.
 - **The setup wizard does not reimplement symlinking.** `setup/index.mjs` shells out to `symlink_dotfiles.sh` so there is one source of truth.
 
 ## Dotfile Loading Order (in .shell_common)

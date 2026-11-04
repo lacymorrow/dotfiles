@@ -85,6 +85,9 @@ Thumbs.db
 # dotenv environment variables file
 .env
 
+# Tokens and credentials, sourced from ~/.secrets by .shell_common
+.secrets
+
 # npm configuration
 # home/.npmrc is safe to commit — it uses ${NPM_TOKEN} env var interpolation.
 # Set the actual token in ~/.secrets (sourced by .zprofile, never committed).

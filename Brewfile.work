@@ -1,0 +1,92 @@
+# Homebrew packages for an employer-managed Mac. Used by `./setup.sh --work`.
+#
+# This is Brewfile minus tunnels, VPNs, scanners, torrents, VMs, unapproved AI
+# tools and the hardware section. It is a separate file because `brew bundle dump`
+# rewrites Brewfile in place and would flatten any conditionals kept there.
+# Add new packages to both files if they belong on a work machine.
+
+tap "bjarneo/cliamp"
+tap "oven-sh/bun"
+tap "supabase/tap"
+
+###############################################################################
+# CLI tools                                                                   #
+###############################################################################
+brew "asciinema"
+brew "bash"
+brew "bat"
+brew "cmake"
+brew "coreutils"
+brew "docker"             # CLI only; Docker Desktop needs a paid license at company scale
+brew "ffmpeg"
+brew "flac"
+brew "glib"
+brew "gopls"
+brew "goreleaser"
+brew "imagemagick"
+brew "libvorbis"
+brew "mas"                # required by the App Store apps at the end of this file
+brew "mkcert"
+brew "nss"
+brew "pkgconf"
+brew "poetry"
+brew "python-yq"
+brew "ripgrep"
+brew "rpm"
+brew "snapcraft"
+brew "starship"
+brew "trash"
+brew "uv"
+brew "wget"
+brew "zlib"
+brew "zsh-autosuggestions"
+brew "zsh-completions"
+brew "zsh-syntax-highlighting"
+
+brew "gh"
+brew "git-lfs"            # .gitconfig sets [filter "lfs"] required = true
+brew "tmux"
+brew "jq"
+brew "fd"
+brew "fzf"
+
+brew "bjarneo/cliamp/cliamp"
+brew "oven-sh/bun/bun"
+brew "supabase/tap/supabase"
+
+###############################################################################
+# Cask apps                                                                   #
+###############################################################################
+cask "visual-studio-code"
+cask "firefox"
+cask "ghostty"
+cask "gimp"
+cask "spotify"
+cask "vlc"
+cask "xquartz"
+cask "zed"
+
+# IT often installs these. A cask fails if the app is already there, so skip them.
+cask "slack" unless File.exist?("/Applications/Slack.app")
+cask "zoom" unless File.exist?("/Applications/zoom.us.app")
+cask "google-chrome" unless File.exist?("/Applications/Google Chrome.app")
+
+###############################################################################
+# QuickLook plugins                                                           #
+###############################################################################
+cask "qlcolorcode"
+cask "qlstephen"
+cask "qlmarkdown"
+cask "quicklook-json"
+cask "qlprettypatch"
+cask "quicklook-csv"
+cask "webpquicklook"
+cask "suspicious-package"
+cask "syntax-highlight"
+cask "quicklook-video"
+
+###############################################################################
+# Mac App Store (needs an Apple ID signed in to the App Store)                #
+###############################################################################
+mas "Amphetamine", id: 937984704
+mas "Flycut", id: 442160987
