@@ -9,6 +9,8 @@ fi
 # Initialize completions, rebuilding the cache at most once a day.
 # -u skips the prompt about Homebrew's group-writable completion dirs.
 autoload -Uz compinit
+# Prune dangling Homebrew completion symlinks (left by uninstalled formulae)
+rm -f -- /opt/homebrew/share/zsh/site-functions/*(N-@) 2>/dev/null
 if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
   compinit -u
 else
@@ -84,3 +86,6 @@ if [ -d "$HOME/.lacy" ]; then
   [ -f "$HOME/.lacy/lacy.plugin.zsh" ] && source "$HOME/.lacy/lacy.plugin.zsh"
   [ -d "$HOME/.lacy/bin" ] && export PATH="$HOME/.lacy/bin:$PATH"
 fi
+
+# Lacy Shell
+source /Users/lmorrow@crocs.com/.lacy/lacy.plugin.zsh
