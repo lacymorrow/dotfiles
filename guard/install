@@ -11,6 +11,19 @@
 #
 # Wiring (~/.gitconfig.local) is still written by setup/index.mjs. This script only
 # owns the files.
+#
+# CHECKOUT-INDEPENDENT, by construction: `src` is this script's own directory, dest
+# is ${GUARD_DEST:-$HOME/.local/share/git-identity-guard}, and the hook symlinks are
+# written relative to ../dispatch. Nothing is carried out of, or written back into,
+# the checkout this ran from. So a host whose dotfiles checkout cannot safely be
+# updated can install from a detached temp worktree at origin/main and leave the
+# live tree alone.
+#
+# That case is live, not hypothetical: on graphite /Users/lacy/dotfiles sits on the
+# unpushed branch brewfile-disabled-casks, and ~/.ssh/config is a per-file symlink
+# INTO that worktree, so `git pull` there writes conflict markers straight into the
+# live ssh config (LACA-2785). Installing from a temp worktree instead left that
+# config untouched (LAC-6549). Reach for that before you reach for `git pull`.
 set -eu
 
 # set -f: the hook-name loops below deliberately rely on word splitting of a
