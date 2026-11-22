@@ -126,7 +126,7 @@ by a pre-commit guard that lives in `guard/`:
 | `guard/hooks.txt` | The hook names `dispatch` is symlinked as. Three do-the-work hooks are deliberately excluded; the file says why. |
 | `guard/install` | Copies `check` and `dispatch` into `~/.local/share/git-identity-guard/`, regenerates the symlinks, prunes any name not in `hooks.txt`. Idempotent. Run it directly to repair a host. |
 | `guard/verify` | Answers "is this host guarded", by byte compare against this repo plus a live-arm probe. |
-| `guard/selftest` | Behavioural arms in a throwaway fixture: does the guard actually refuse a bad identity, including in a repo that sets its own `core.hooksPath`. |
+| `guard/selftest` | Behavioural arms in a throwaway fixture: does the guard actually refuse a bad identity (including in a repo that sets its own `core.hooksPath`), does `install` prune and refuse, and does `verify` report a partial checkout as a partial checkout instead of as drift. |
 
 `setup` runs `guard/install` and wires both arms into `~/.gitconfig.local`. Which arm
 git consults depends on the git version, so **coverage is a per-host property**: 2.54

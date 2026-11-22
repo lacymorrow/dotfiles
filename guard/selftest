@@ -2,7 +2,9 @@
 # Behavioural arms for fleet rule 18's identity guard. Arms 1-3 run against whatever
 # is INSTALLED on this host (not against the repo copies; guard/verify compares
 # those). Arms 4-5 run THIS repo's guard/install into a mktemp sandbox and never
-# touch the real install.
+# touch the real install. Arms 6a-6g run THIS repo's guard/verify against fixture
+# trees with GUARD_DEST pointed into the same sandbox, and assert what it REPORTS
+# about a host, which is a third thing from either (see their own header).
 #
 # Why a fixture and not the real repos: the three of Lacy's repos whose tracked
 # package.json postinstall ends `git config core.hooksPath .githooks` are not a
@@ -200,6 +202,99 @@ for n in 'push-to-checkout' '*'; do
     pass "arm 5 (install refuses): a hooks.txt naming '$n' is refused"
   fi
 done
+
+# ---- Arms 6a-6g: what guard/verify REPORTS. ----------------------------------
+#
+# Regression arms for LAC-6546 (fixed in #14, 75fcdbe). Run from a partial copy of
+# guard/, verify reached its byte compare with an empty `want`, called a correctly
+# installed host DRIFTED, and printed "repo " with nothing after it. These arms are
+# a third thing from arms 1-3 (the installed guard's behaviour) and arms 4-5
+# (install in a sandbox): they assert what the PROBE says about a host, which is
+# the half that nothing covered when #14 landed.
+#
+# 6e, 6f and 6g fail on bc22a2a and pass on 75fcdbe. 6a-6d pin behaviour that was
+# already right and has to stay right while anything in that class is fixed.
+#
+# Hermetic by construction: every arm runs verify against a fixture tree with
+# GUARD_DEST pointed inside $root, so no arm reads or writes this host's real
+# install, and verify skips its own wiring section whenever GUARD_DEST is
+# overridden. Nothing here reports on the real host; that is guard/verify's job.
+#
+# empty_digest is the cheap general form of the whole class: whatever the arm, no
+# verify output may print a hash slot with nothing in it. The three alternatives
+# are verify's own format strings with one side empty.
+empty_digest() { printf '%s\n' "$1" | grep -Eq 'installed , repo|, repo \)|matches the repo \(\)'; }
+
+verify_arm() { # $1 label, $2 fixture tree, $3 GUARD_DEST, $4 accepted rcs ("0|2"), $5 required text, $6 forbidden text ("" = none)
+  v_out=$(GUARD_DEST="$3" "$2/verify" 2>&1)
+  v_rc=$?
+  v_why=
+  case "|$4|" in *"|$v_rc|"*) ;; *) v_why="$v_why; exited $v_rc, wanted $4" ;; esac
+  case $v_out in *"$5"*) ;; *) v_why="$v_why; no '$5' in the output" ;; esac
+  if [ -n "$6" ]; then
+    case $v_out in *"$6"*) v_why="$v_why; said '$6'" ;; esac
+  fi
+  empty_digest "$v_out" && v_why="$v_why; printed an empty digest"
+  if [ -z "$v_why" ]; then
+    pass "arm $1"
+  else
+    fail "arm $1${v_why#;}"
+    printf '%s\n' "$v_out" | sed 's/^/      | /'
+  fi
+}
+
+vdest=$root/verify-installed
+if GUARD_DEST=$vdest "$src/install" >/dev/null 2>&1; then
+  # 6a: the full tree against a correct install. The one arm that must read green.
+  verify_arm "6a (full tree, clean install)" "$src" "$vdest" "0|2" "guard matches the repo" ""
+  if [ "$v_rc" = 2 ]; then
+    echo "note  arm 6a exited 2 (PARTIAL), the accepted answer on this git:"
+    echo "note  $(git --version) documents no hook.* config keys, so verify reports reduced coverage."
+  fi
+
+  # 6b: drift still has to read as drift. #14 narrowed what counts as drift, so this
+  # is the arm that catches narrowing it too far.
+  vdrift=$root/verify-drifted
+  cp -R "$vdest" "$vdrift"
+  echo '# drift' >> "$vdrift/check"
+  verify_arm "6b (installed copy drifted)" "$src" "$vdrift" 1 "differs from" ""
+
+  # 6c: installed copy present but unhashable. A directory named `check` is -e and
+  # not -f, so shasum yields nothing. Pre-#14 this printed "is missing", which sends
+  # the reader off to install a file that is already there.
+  vnohash=$root/verify-installed-nohash
+  cp -R "$vdest" "$vnohash"
+  rm -f "$vnohash/check"
+  mkdir -p "$vnohash/check"
+  verify_arm "6c (installed copy present but unhashable)" "$src" "$vnohash" 1 "exists but produced no digest" "differs"
+
+  # 6d: installed copy absent. Unchanged by #14, pinned so it stays unchanged.
+  verify_arm "6d (installed copy absent)" "$src" "$root/verify-absent" 1 "missing. Run guard/install." "differs"
+
+  # 6e/6f: the LAC-6546 shape itself. The fixture tree is a PARTIAL copy of guard/
+  # while GUARD_DEST still points at 6a's clean install, so the host really is
+  # guarded and any drift verdict about it is false. Two shapes, because the old
+  # code reached the same wrong arm from either one.
+  vpart2=$root/verify-partial-pair
+  mkdir -p "$vpart2"
+  cp "$src/verify" "$src/hooks.txt" "$vpart2/"
+  verify_arm "6e (partial repo tree: verify + hooks.txt)" "$vpart2" "$vdest" 1 "not found (or not readable) at $vpart2/check" "differs"
+  vpart1=$root/verify-partial-solo
+  mkdir -p "$vpart1"
+  cp "$src/verify" "$vpart1/"
+  verify_arm "6f (partial repo tree: verify alone)" "$vpart1" "$vdest" 1 "not found (or not readable) at $vpart1/check" "differs"
+
+  # 6g: the other half of the class. A directory named `check` IS readable, so it
+  # clears the preflight and lands in the byte compare with no digest for the REPO
+  # side, which is the exact state that printed the empty hash.
+  vsrcnohash=$root/verify-repo-nohash
+  mkdir -p "$vsrcnohash"
+  cp "$src/verify" "$src/dispatch" "$src/hooks.txt" "$vsrcnohash/"
+  mkdir -p "$vsrcnohash/check"
+  verify_arm "6g (repo copy present but unhashable)" "$vsrcnohash" "$vdest" 1 "no digest for the repo copy" "differs"
+else
+  fail "arms 6a-6g: guard/install into $vdest failed, so verify had nothing to be checked against"
+fi
 
 [ "$rc" -eq 0 ] && echo "OK    behavioural arms agree with this host's git version." || echo "FAILED"
 exit $rc
