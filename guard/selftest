@@ -25,6 +25,21 @@ set -u
 
 want=me@lacymorrow.com
 bad=not-lacy@example.invalid
+# CAPABILITY, NOT CONFIG. `git help -c` lists the config variables this git BINARY
+# DOCUMENTS, so this counts "does this git have a config-hook reader", never "how
+# many hook.* keys this host has set". The two are independent and routinely
+# disagree (measured 2026-11-03, LACA-3003 / LAC-6552):
+#
+#   host      git      git help -c '^hook\.'   git config --get-regexp '^hook\.'
+#   zero      2.54.0   3                       2
+#   graphite  2.50.1   0                       2
+#
+# Both hosts have [hook "identity-guard"] set; graphite's is configured and inert.
+# Those are the numbers on that date, not a standing fact: LACA-2995's git upgrade
+# for graphite was in flight, so re-measure graphite's row before leaning on it.
+# (graphite was unreachable from zero on 2026-11-22, so it is not re-measured here.)
+# So every message printing this number has to say what it measures, or the next
+# reader "repairs" a config that was already correct (same class as LAC-6546).
 keys=$(git help -c 2>/dev/null | grep -c '^hook\.')
 rc=0
 pass() { echo "PASS  $1"; }
@@ -70,14 +85,17 @@ fi
 
 # Arm 2: the relapse state. core.hooksPath=.githooks REPLACES the global dispatcher,
 # so only the config-hook arm can catch a bad identity here. Expectation is
-# host-aware on purpose: 0 hook.* variables means the host really is unguarded in
-# such a repo, which is a true finding about the host, not a broken guard.
+# host-aware on purpose: a git that documents no hook.* config keys has no
+# config-hook reader, so the host really is unguarded in such a repo whatever its
+# config sets. That is a true finding about the host, not a broken guard.
 d=$(fixture relapsed yes)
 if out=$(git -C "$d" -c user.email="$bad" -c user.name=Nobody commit -m probe 2>&1); then
   if [ "$keys" -gt 0 ] 2>/dev/null; then
-    fail "arm 2 (repo-local hooksPath): commit as <$bad> SUCCEEDED although this git has $keys hook.* variables. The config-hook arm is wired but not firing."
+    fail "arm 2 (repo-local hooksPath): commit as <$bad> SUCCEEDED although this git documents $keys hook.* config keys, so it has a config-hook reader. The config-hook arm is wired but not firing."
   else
-    echo "WARN  arm 2 (repo-local hooksPath): commit as <$bad> succeeded, as expected on this git ($(git --version), 0 hook.* variables)."
+    echo "WARN  arm 2 (repo-local hooksPath): commit as <$bad> succeeded, as expected on this git."
+    echo "WARN  $(git --version) documents no hook.* config keys, so it has no config-hook reader;"
+    echo "WARN  any hook.identity-guard keys this host has set are inert."
     echo "WARN  Every repo that sets its own core.hooksPath commits with fleet rule 18 unenforced. Fix is a git upgrade."
   fi
 else

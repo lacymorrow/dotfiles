@@ -18,8 +18,9 @@
 #     package.json postinstall re-sets core.hooksPath=.githooks, the symlink STILL
 #     resolves and is STILL executable while the guard is no longer reached.
 #   * read the version string alone. The honest question is whether this git has a
-#     config-hook reader, so ask git: `git help -c` lists 0 hook.* variables below
-#     2.54 and 3 on 2.54.
+#     config-hook reader, so ask git: `git help -c` lists the hook.* config keys
+#     this git BINARY DOCUMENTS (0 below 2.54, 3 on 2.54), which is a capability
+#     answer and says nothing about how many hook.* keys this host has SET.
 #
 # The verdict is a byte compare against this repo plus a live-arm probe. Nothing
 # else is sufficient. For behaviour under the relapse state, run guard/selftest.
@@ -40,12 +41,40 @@ ok() { echo "ok    $1"; }
 
 sum() { [ -f "$1" ] && shasum -a 256 "$1" 2>/dev/null | cut -d' ' -f1; }
 
+# 0. The repo side of the compare has to actually be here, and that is settled
+# BEFORE any compare, not inside one. Run from a partial tree (measured: a temp dir
+# holding only `verify` and `hooks.txt` extracted from origin/main, zero,
+# 2026-11-02, still reproducible on bc22a2a) the byte compare below reached its
+# `!=` arm with an empty `want` and reported a correctly installed host as DRIFTED,
+# printing nothing after "repo ". That is a fourth probe shape that reads wrong on
+# a good host, and unlike the three the header refuses, it was inside this script
+# (LAC-6546). Same preflight guard/install already runs over the same three files.
+for f in check dispatch hooks.txt; do
+  if [ ! -r "$src/$f" ]; then
+    echo "FAIL  repo copy not found (or not readable) at $src/$f."
+    echo "note  guard/verify compares this host against the repo copies sitting next to"
+    echo "note  it, so a partial copy of guard/ has nothing to compare against. This says"
+    echo "note  nothing about whether this host is guarded."
+    echo "FAILED  no verdict: run guard/verify from a full checkout of the dotfiles repo."
+    exit 1
+  fi
+done
+
 # 1. Bytes. The whole point of tracking the guard: a drifted copy is now visible.
 for f in check dispatch; do
   want=$(sum "$src/$f")
   got=$(sum "$dest/$f")
-  if [ -z "$got" ]; then
-    fail "$dest/$f is missing. Run guard/install."
+  if [ -z "$want" ]; then
+    # Unreachable through a missing file (preflight above), so this is a hashing
+    # failure: shasum absent, or the file present but unhashable. Never fall
+    # through to the compare, which is what printed the empty hash.
+    fail "no digest for the repo copy $src/$f (shasum produced nothing). Cannot compare."
+  elif [ -z "$got" ]; then
+    if [ -e "$dest/$f" ]; then
+      fail "$dest/$f exists but produced no digest (shasum failed on it). Cannot compare."
+    else
+      fail "$dest/$f is missing. Run guard/install."
+    fi
   elif [ "$want" != "$got" ]; then
     fail "$dest/$f differs from $src/$f (installed $got, repo $want). Run guard/install."
   else
@@ -95,9 +124,10 @@ fi
 keys=$(git help -c 2>/dev/null | grep -c '^hook\.')
 ver=$(git --version)
 if [ "$keys" -gt 0 ] 2>/dev/null; then
-  ok "config-hook arm is live ($ver, $keys hook.* variables): fires even in a repo with its own core.hooksPath"
+  ok "config-hook arm is live ($ver documents $keys hook.* config keys, so it has a config-hook reader): fires even in a repo with its own core.hooksPath"
 else
-  echo "WARN  config-hook arm is DEAD config on this git ($ver, 0 hook.* variables)."
+  echo "WARN  config-hook arm is DEAD config on this git ($ver documents no hook.* config"
+  echo "WARN  keys, so it has no config-hook reader; hook.identity-guard keys set here are inert)."
   echo "WARN  Only the global core.hooksPath dispatcher runs, and a repo-local core.hooksPath REPLACES it."
   echo "WARN  Such a repo commits with fleet rule 18 unenforced. Fix is a git upgrade, not a guard change."
   [ "$rc" -eq 0 ] && rc=2
